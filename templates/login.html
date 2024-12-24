@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page - Inventory Management for Clubs</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="loginBox">
+            <div class="loginHeader">
+                <h1>Inventory Management for Clubs IITGN</h1>
+                <h3>Login Page</h3>
+            </div>
+            <div class="loginBody">
+                {% if msg %}
+                    <div class="errorMessage">
+                        <p>{{ msg }}</p>
+                    </div>
+                {% endif %}
+                <form action="/login" method="POST"> 
+                    <fieldset>
+                        <div class="formGroup">
+                            <label for="username">Username:</label>
+                            <input placeholder="Enter your username" type="text" id="username" name="username" required>
+                        </div>
+                        <div class="formGroup">
+                            <label for="password">Password:</label>
+                            <input placeholder="Enter your password" type="password" id="password" name="password" required>
+                        </div> 
+                        <button type="submit" class="btnSubmit">Login</button>
+                        <div class="formExtras">
+                            <label><input type="checkbox" name="remember"> Remember Me</label>
+                            <a href="#" class="forgotPassword">Forgot Password?</a>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
