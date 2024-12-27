@@ -10,7 +10,6 @@ db = pymysql.connect(
     password="shrutika123@",  
     database="inventory_db"  
 )
-
 @app.route('/')
 def index():
     # Redirect to the user registration form
