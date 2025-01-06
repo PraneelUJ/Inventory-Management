@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Inventory Management System</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='loginadmin.css') }}">
+    <script src="https://use.fontawesome.com/0c7a3095b5.js"></script>
+</head>
+
+<body>
+    <div class="dashboardMainContainer">
+        <div class="dashboard_sidebar" id="dashboard_sidebar">
+            <h3 class="dashboard_logo" id="dashboard_logo">IMS</h3>
+            <div class="dashboard_sidebar_user">
+                <img src="{{ url_for('static', filename='download.png') }}" alt="user image" id="userimage" />
+                <span>{{ name }}</span>
+                {% if council %}
+                <span>{{ council }}</span>
+                {% else %}
+                <span>Admin</span>
+                {% endif %}
+            </div>
+            <div class="dashboard_sidebar_menus">
+                <ul class="dashboard_menu_lists">
+                    {% if position == 'Member' %}
+                    <li>
+                        <a href="#" class="menuActive" id="dashboard"><i class="fa fa-home"></i><span class="menuText">Dashboard</span></a>
+                    </li>
+                    <li>
+                        <a href="#" class="menuActive" id="requestbtn"><i class="fa fa-plus-circle"></i><span class="menuText">Request Items</span></a>
+                    </li>
+                    <li>
+                        <a href="#" class="menuActive" id="viewbtn"><i class="fa fa-list"></i><span class="menuText">View Inventory</span></a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a href="#" class="menuActive" id="dashboard"><i class="fa fa-home"></i><span class="menuText">Dashboard</span></a>
+                    </li>
+                    <li>
+                        <a href="#" class="menuActive" id="viewrequestbtn"><i class="fa fa-envelope"></i><span class="menuText">View Requests</span></a>
+                    </li>
+                    <li>
+                        <a href="#" class="menuActive" id="viewbtn"><i class="fa fa-eye"></i><span class="menuText">View Inventories</span></a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        <div class="dashboard_content_container" id="dashboard_content_container">
+            <div class="dashboard_topNav">
+                <a href="#" id="togglebtn"><i class="fa fa-navicon"></i></a>
+                <a href="#" id="logoutbtn"><i class="fa fa-power-off"></i> Log-out</a>
+            </div>
+            <div class="dashboard_content">
+                <div class="dashboard_content_main">
+                    <div id="dashboardContent">
+                        <h1>Welcome to the Dashboard</h1>
+                    </div>
+                    <div id="inventoryTable" style="display: none;">
+                        <h2>Inventory Items</h2>
+                        <table id="inventoryTableContent" border="1">
+                            <thead>
+                                <tr>
+                                    <th>Item Number</th>
+                                    <th>Item Name</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div id="requestForm" style="display: none;">
+                        <h1 class="text-center">Request Inventory Item</h1>
+                        <form method="POST" action="/request_item" class="mt-4">
+                            <div class="mb-3">
+                                <label for="item_id" class="form-label">Select Item</label>
+                                <select name="item_id" id="item_id" class="form-select" required>
+                                    <option value="">-- Select Item --</option>
+                                    {% for item in items %}
+                                    <option value="{{ item[0] }}">{{ item[1] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="quantity" class="form-label">Quantity</label>
+                                <input type="number" name="quantity" id="quantity" class="form-control" min="1" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="purpose" class="form-label">Purpose</label>
+                                <textarea name="purpose" id="purpose" class="form-control" rows="3" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Request</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const logoutbtn = document.getElementById('logoutbtn');
+        const viewbtn = document.getElementById('viewbtn');
+        const requestbtn = document.getElementById('requestbtn');
+        const dashboard = document.getElementById('dashboard');
+        const dashboardContent = document.getElementById('dashboardContent');
+        const inventoryTable = document.getElementById('inventoryTable');
+        const requestForm = document.getElementById('requestForm');
+        const inventoryTableContent = document.querySelector('#inventoryTableContent tbody');
+
+        // Logout functionality
+        logoutbtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            const confirmation = confirm("Are you sure you want to log out?");
+            if (confirmation) {
+                window.location.href = "/";
+            }
+        });
+
+        // Show inventory table
+        viewbtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            dashboardContent.style.display = 'none';
+            inventoryTable.style.display = 'block';
+            requestForm.style.display = 'none';
+
+            fetch('/inventory')
+                .then(response => response.json())
+                .then(data => {
+                    inventoryTableContent.innerHTML = ''; // Clear existing rows
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.item_number}</td>
+                            <td>${item.item_name}</td>
+                            <td>${item.quantity}</td>
+                        `;
+                        inventoryTableContent.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching inventory:', error);
+                });
+        });
+
+        // Show request form
+        requestbtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            dashboardContent.style.display = 'none';
+            inventoryTable.style.display = 'none';
+            requestForm.style.display = 'block';
+        });
+
+        // Show dashboard content
+        dashboard.addEventListener('click', (event) => {
+            event.preventDefault();
+            dashboardContent.style.display = 'block';
+            inventoryTable.style.display = 'none';
+            requestForm.style.display = 'none';
+        });
+    </script>
+</body>
+
+</html>
