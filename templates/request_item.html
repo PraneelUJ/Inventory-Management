@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Inventory Item</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <div class="container mt-5">
+        <h1 class="text-center">Request Inventory Item</h1>
+        <form method="POST" action="/request_item" class="mt-4">
+            <div class="mb-3">
+                <label for="item_id" class="form-label">Select Item</label>
+                <select name="item_id" id="item_id" class="form-select" required>
+                    <option value="">-- Select Item --</option>
+                    {% for item in items %}
+                    <option value="{{ item[0] }}">{{ item[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="quantity" class="form-label">Quantity</label>
+                <input type="number" name="quantity" id="quantity" class="form-control" min="1" required>
+            </div>     
+            <div class="mb-3">
+                <label for="purpose" class="form-label">Purpose</label>
+                <textarea name="purpose" id="purpose" class="form-control" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Request</button>
+        </form>
+    </div>
+</body>
+</html>
+
