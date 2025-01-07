@@ -26,25 +26,21 @@ def login():
     if request.method == "POST":
         name = request.form["username"]
         password = request.form["password"]
-        # Check if the username exists and fetch the password
-        try:
-            cursor.fetchall()
-        except Exception:
-            pass
+
         cursor.execute("SELECT id, password FROM users WHERE name = %s", (name,))
         result = cursor.fetchone()  # Fetch the first matching result
-        print(result, password, check_password_hash(result['password'], password))
-        # If result is found, check if the password matches the hashed password
-        if result and check_password_hash(result['password'], password):  
-            session['user_id'] = result['id']  # Store user_id in session
-            print(f"Login successful, user_id stored in session: {session.get('user_id')}")
-            print("Login successful")
-            return redirect(url_for('request_item'))  # Redirect to request item page after successful login
+
+        if result and result['password'] == password:
+            session['user_id'] = result['id']  # Set user ID in session
+            return redirect(url_for('request_item'))
         else:
-            print("Incorrect username/password")
-            message = "Incorrect username/password"
-            return render_template("login.html", msg=message)
+            flash("Invalid username or password")
+            return render_template("login.html")
     return render_template("login.html")
+
+
+        # return render_template("login.html")
+    
 
 # Request Item Page route
 @app.route('/request_item', methods=['GET', 'POST'])
@@ -61,11 +57,11 @@ def request_item():
 
         cursor = mydb.cursor()
         query = """
-                INSERT INTO requests (user_id, item_id, quantity, purpose, status)
-                VALUES (%s, %s, %s, %s, 'Pending')
-            """
-        cursor.execute(query, (user_id, item_id, quantity, purpose))
-        mydb.commit()
+                INSERT INTO requests (user_id, item_id, quantity, purpose, status, user)
+                VALUES (%s, %s, %s, %s, 'Pending', %s)
+            """  
+        cursor.execute(query, (user_id, item_id, quantity, purpose, user_id))
+        mydb.commit() 
         flash('Request submitted successfully!')
         return redirect('/request_item')  # Redirect to request_item page after submission
 
