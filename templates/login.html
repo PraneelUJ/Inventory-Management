@@ -67,23 +67,19 @@
             const reader = body.getReader();
             const decoder = new TextDecoder();
             const chunks = [];
-
+    
             async function read() {
                 const { done, value } = await reader.read();
-
-                
                 if (done) {
-                    return chunks.join("")
+                    return chunks.join("");
                 }
-
                 const chunk = decoder.decode(value, { stream: true });
                 chunks.push(chunk);
-                return read(); 
+                return read();
             }
-
+    
             return read();
         }
-
     </script>
     <script>
         function parseJwt(token) {
@@ -92,10 +88,10 @@
             var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
                 return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
             }).join(''));
-
+    
             return JSON.parse(jsonPayload);
         }
-
+    
         function onSignIn(response) {
             const token = response.credential; 
             fetch('/google-login', {
@@ -105,20 +101,27 @@
                 },
                 body: JSON.stringify({ id_token: token }) 
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.href = "/admin"; 
-                    } else {
-                        alert(data.message);  
-                    }
-                })
-                .catch(error => {
-                    console.error('Error during Google login:', error);
-                });
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const name = data.name;
+                    const position = data.position;
+                    // Redirect to admin page with query parameters
+                    window.location.href = `/admin?name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}`;
+                } else {
+                    alert(data.message);  
+                }
+            })
+            .catch(error => {
+                console.error('Error during Google login:', error);
+            });
         }
+        
+    
+        // Ensure DOM is fully loaded before attaching event listeners
+        
     </script>
-
+    
 
 </body>
 
