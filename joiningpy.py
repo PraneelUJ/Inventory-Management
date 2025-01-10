@@ -52,27 +52,41 @@ def googlelogin():
     if response.status_code == 200:
         email = userinfo.get("email")
         name = userinfo.get("name")
+        position = userinfo.get("position")
         
         cursor.execute("SELECT Position, Club FROM details WHERE Email = %s", (email,))
         userdata = cursor.fetchone()
         
         if userdata:
             position, club = userdata
-            # Pass data to admin.html using the redirect
-            return jsonify({"success": True, "message": "OK"}), 200
+
+            return jsonify({
+                "success": True,
+                "message": "OK",
+                "name": name,
+                "position": position
+            }), 200
         else:
-            return jsonify({"success": False, "message": "User Not Found"}), 404
+            return jsonify({
+                "success": False,
+                "message": "User Not Found",
+                "name": name,
+                "position": position
+            }), 404
     else:
         return jsonify({"success": False, "message": "Invalid token"}), 400
 
-@app.route("/admin", methods=["GET"])
-def admin():
-    # Fetching all items from CulturalInventory
-    cursor.execute("SELECT ID, ItemName FROM CulturalInventory")
-    items = cursor.fetchall()
+@app.route("/request_item", methods=["GET"])
+def request_item():
+    try:
+        cursor.execute("SELECT ID, ItemName, ItemQty FROM CulturalInventory")
+        items = cursor.fetchall()
+        inventory = [{"item_number": row[0], "item_name": row[1], "quantity": row[2]} for row in items]
+        return jsonify(inventory), 200
+    except Exception as e:
+        print(f"Error fetching inventory: {e}")
+        return jsonify({"error": "Failed to fetch inventory"}), 500
 
-    # Pass the items to the template
-    return render_template("admin.html", items=items)
 
 @app.route("/inventory", methods=["GET"])
 def getdata():
