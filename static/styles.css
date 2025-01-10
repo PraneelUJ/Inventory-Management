@@ -284,31 +284,3 @@ p.bannerTagline{
         padding: 10px;
     }
 }
-@media (max-width: 480px) {
-    /* Further adjustments for very small screens */
-    .header {
-        padding: 10px 5px;
-        text-align: center;
-    }
-
-    .bannerheader h1 {
-        font-size: 35px;
-    }
-    .bannerheader p {
-        font-size: 16px;
-    }
-    .bannerIcons a {
-        font-size: 16px;
-        width: 30px;
-        height: 30px;
-    }
-
-    .formContainer input {
-        font-size: 12px;
-        padding: 10px;
-    }
-    .formContainer button {
-        font-size: 14px;
-        padding: 10px;
-    }
-}
