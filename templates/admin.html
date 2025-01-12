@@ -48,6 +48,25 @@
                 </ul>
             </div>
         </div>
+        
+        <div id="viewRequestsTable" style="display: none;">
+            <h2>Pending Item Requests</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>User</th>
+                            <th>Item</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
         <div class="dashboard_content_container" id="dashboard_content_container">
             <div class="dashboard_topNav">
                 <a href="#" id="togglebtn"><i class="fa fa-navicon"></i></a>
@@ -98,109 +117,165 @@
     </div>
 
     <script>
-        const logoutbtn = document.getElementById('logoutbtn');
-        const viewbtn = document.getElementById('viewbtn');
-        const requestbtn = document.getElementById('requestbtn');
-        const dashboard = document.getElementById('dashboard');
-        const dashboardContent = document.getElementById('dashboardContent');
-        const inventoryTable = document.getElementById('inventoryTable');
-        const requestForm = document.getElementById('requestForm');
-        const inventoryTableContent = document.querySelector('#inventoryTableContent tbody');
-        const submitbtn=document.querySelector('button[type="submit"]');
-      
-        logoutbtn.addEventListener('click', (event) => {
-            event.preventDefault();
-            const confirmation = confirm("Are you sure you want to log out?");
-            if (confirmation) {
-                window.location.href = "/";
-            }
-        });
+        // Ensure variables are declared only once
+        document.addEventListener('DOMContentLoaded', () => {
+            const logoutbtn = document.getElementById('logoutbtn');
+            const viewbtn = document.getElementById('viewbtn');
+            const requestbtn = document.getElementById('requestbtn');
+            const dashboard = document.getElementById('dashboard');
+            const dashboardContent = document.getElementById('dashboardContent');
+            const inventoryTable = document.getElementById('inventoryTable');
+            const requestForm = document.getElementById('requestForm');
+            const inventoryTableContent = document.querySelector('#inventoryTableContent tbody');
+            const submitbtn = document.querySelector('button[type="submit"]');
+            const viewrequestbtn = document.getElementById('viewrequestbtn');
+            const viewRequestsTable = document.getElementById('viewRequestsTable');
+            const requestsTableBody = viewRequestsTable.querySelector('tbody');
+        
+            // Logout button functionality
+            logoutbtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                const confirmation = confirm("Are you sure you want to log out?");
+                if (confirmation) {
+                    window.location.href = "/";
+                }
+            });
 
-        // Show inventory table
-        viewbtn.addEventListener('click', (event) => {
-            event.preventDefault();
-            dashboardContent.style.display = 'none';
-            inventoryTable.style.display = 'block';
-            requestForm.style.display = 'none';
-
-            fetch('/inventory')
+            dashboard.addEventListener('click',(event)=>{
+                event.preventDefault();
+                dashboardContent.style.display = 'block';
+                inventoryTable.style.display = 'none';
+                requestForm.style.display = 'none';
+                viewRequestsTable.style.display = 'none';
+            })
+        
+            // View requests functionality
+                viewrequestbtn.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    viewRequestsTable.style.display = 'block';
+                    dashboardContent.style.display = 'none';
+                    inventoryTable.style.display = 'none !important';
+                    requestForm.style.display = 'none';
+                    
+        
+                    // Hide other sections
+              
+                    // Fetch requests
+                    fetch('/requests')
+                        .then((response) => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! Status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then((data) => {
+                            requestsTableBody.innerHTML = ''; // Clear existing rows
+                            data.forEach((request) => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>{{name}}</td>
+                                    <td>${request.item}</td>
+                                    <td>${request.status}</td>
+                                    <td>
+                                        <form action="/admin/approve/{request.user}" method="POST" class="d-inline">
+                                            <button type="submit" class="btn btn-success">Approve</button>
+                                        </form>
+                                        <form action="/admin/reject/{{name}}" method="POST" class="d-inline">
+                                            <button type="submit" class="btn btn-danger">Reject</button>
+                                        </form>
+                                    </td>
+                                `;
+                                requestsTableBody.appendChild(row);
+                            });
+                        })
+                        .catch((error) => {
+                            console.error('Error fetching requests:', error);
+                        });
+                });
+            
+        
+            // View inventory functionality
+            viewbtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                dashboardContent.style.display = 'none';
+                inventoryTable.style.display = 'block';
+                requestForm.style.display = 'none';
+        
+                fetch('/inventory')
+                    .then(response => response.json())
+                    .then(data => {
+                        inventoryTableContent.innerHTML = ''; // Clear existing rows
+                        data.forEach(item => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${item.item_number}</td>
+                                <td>${item.item_name}</td>
+                                <td>${item.quantity}</td>
+                            `;
+                            inventoryTableContent.appendChild(row);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching inventory:', error);
+                    });
+            });
+        
+            // Request item functionality
+            const dropdown = document.getElementById('item_id');
+            const quantityInput = document.getElementById('quantity');
+            const quantityHelp = document.getElementById('quantityHelp');
+        
+            let itemqty = {};
+            fetch('/request_item')
                 .then(response => response.json())
                 .then(data => {
-                    inventoryTableContent.innerHTML = ''; // Clear existing rows
+                    dropdown.innerHTML = '<option value="">-- Select Item --</option>';
                     data.forEach(item => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${item.item_number}</td>
-                            <td>${item.item_name}</td>
-                            <td>${item.quantity}</td>
-                        `;
-                        inventoryTableContent.appendChild(row);
+                        const option = document.createElement('option');
+                        option.value = item.item_number;
+                        option.textContent = item.item_name;
+                        itemqty[item.item_number] = item.quantity;
+                        dropdown.appendChild(option);
                     });
                 })
                 .catch(error => {
                     console.error('Error fetching inventory:', error);
                 });
-        });
-        // request
-        const dropdown = document.getElementById('item_id');
-const quantityInput = document.getElementById('quantity');
-
-// Fetch inventory data and populate the dropdown
-let itemqty={};
-fetch('/request_item')
-    .then(response => response.json())
-    .then(data => {
-        dropdown.innerHTML = '<option value="">-- Select Item --</option>'; // Reset dropdown
-        data.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item.item_number;
-            option.textContent = item.item_name;
-            itemqty[item.item_number]=item.quantity;
-            dropdown.appendChild(option);
-        });
-    })
-    .catch(error => {
-        console.error('Error fetching inventory:', error);
-    });
-
-dropdown.addEventListener('change',()=>{
-    const selecteditem=dropdown.value;
-    if(selecteditem && itemqty[selecteditem]!==undefined){
-        const maxqty=itemqty[selecteditem];
-        quantityHelp.textContent=`Max quantity avaliable : ${maxqty}`;
-        quantityInput.max=maxqty;
-        quantityInput.value='';
-        submitbtn.disabled=false;
-    }
-    else{
-        quantityHelp.textContent='Please select a valid item';
-        submitbtn.disabled=true;
-    }
-});
- quantityInput.addEventListener('input',()=>{
-    const selecteditem=dropdown.value;
-    const maxqty=itemqty[selecteditem];
-    if(quantityInput.value>maxqty){
-        alert(`You can't request more than ${maxqty} items`);
-        quantityInput.value=maxqty;
-    }
-    submitbtn.disabled=quantityInput.value> maxqty | quantityInput.value<=0;
- });
         
-        requestbtn.addEventListener('click', (event) => {
-            event.preventDefault();
-            dashboardContent.style.display = 'none';
-            inventoryTable.style.display = 'none';
-            requestForm.style.display = 'block';
-        });
-
+            dropdown.addEventListener('change', () => {
+                const selecteditem = dropdown.value;
+                if (selecteditem && itemqty[selecteditem] !== undefined) {
+                    const maxqty = itemqty[selecteditem];
+                    quantityHelp.textContent = `Max quantity available: ${maxqty}`;
+                    quantityInput.max = maxqty;
+                    quantityInput.value = '';
+                    submitbtn.disabled = false;
+                } else {
+                    quantityHelp.textContent = 'Please select a valid item';
+                    submitbtn.disabled = true;
+                }
+            });
         
-        dashboard.addEventListener('click', (event) => {
-            event.preventDefault();
-            dashboardContent.style.display = 'block';
-            inventoryTable.style.display = 'none';
-            requestForm.style.display = 'none';
+            quantityInput.addEventListener('input', () => {
+                const selecteditem = dropdown.value;
+                const maxqty = itemqty[selecteditem];
+                if (quantityInput.value > maxqty) {
+                    alert(`You can't request more than ${maxqty} items`);
+                    quantityInput.value = maxqty;
+                }
+                submitbtn.disabled = quantityInput.value > maxqty || quantityInput.value <= 0;
+            });
+        
+            requestbtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                dashboardContent.style.display = 'none';
+                inventoryTable.style.display = 'none';
+                requestForm.style.display = 'block';
+                submitbtn.disabled = true;
+            });
+        
         });
+        
     </script>
 </body>
 
