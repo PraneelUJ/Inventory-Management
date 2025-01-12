@@ -1,282 +1,437 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard - Inventory Management System</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='loginadmin.css') }}">
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='loginadmin.css') }}"
+    />
     <script src="https://use.fontawesome.com/0c7a3095b5.js"></script>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="dashboardMainContainer">
-        <div class="dashboard_sidebar" id="dashboard_sidebar">
-            <h3 class="dashboard_logo" id="dashboard_logo">IMS</h3>
-            <div class="dashboard_sidebar_user">
-                <img src="{{ url_for('static', filename='download.png') }}" alt="user image" id="userimage" />
-                <span>{{ name }}</span>
-                {% if council %}
-                <span>{{ council }}</span>
-                {% else %}
-                <span>Admin</span>
-                {% endif %}
-            </div>
-            <div class="dashboard_sidebar_menus">
-                <ul class="dashboard_menu_lists">
-                    {% if position == 'Member' %}
-                    <li>
-                        <a href="#" class="menuActive" id="dashboard"><i class="fa fa-home"></i><span class="menuText">Dashboard</span></a>
-                    </li>
-                    <li>
-                        <a href="#" class="menuActive" id="requestbtn"><i class="fa fa-plus-circle"></i><span class="menuText">Request Items</span></a>
-                    </li>
-                    <li>
-                        <a href="#" class="menuActive" id="viewbtn"><i class="fa fa-list"></i><span class="menuText">View Inventory</span></a>
-                    </li>
-                    {% else %}
-                    <li>
-                        <a href="#" class="menuActive" id="dashboard"><i class="fa fa-home"></i><span class="menuText">Dashboard</span></a>
-                    </li>
-                    <li>
-                        <a href="#" class="menuActive" id="viewrequestbtn"><i class="fa fa-envelope"></i><span class="menuText">View Requests</span></a>
-                    </li>
-                    <li>
-                        <a href="#" class="menuActive" id="viewbtn"><i class="fa fa-eye"></i><span class="menuText">View Inventories</span></a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>
+      <div class="dashboard_sidebar" id="dashboard_sidebar">
+        <h3 class="dashboard_logo" id="dashboard_logo">IMS</h3>
+        <div class="dashboard_sidebar_user">
+          <img
+            src="{{ url_for('static', filename='download.png') }}"
+            alt="user image"
+            id="userimage"
+          />
+          <span>{{ name }}</span>
+          {% if council %}
+          <span>{{ council }}</span>
+          {% else %}
+          <span>Admin</span>
+          {% endif %}
         </div>
-        
-        <div id="viewRequestsTable" style="display: none;">
-            <h2>Pending Item Requests</h2>
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>User</th>
-                            <th>Item</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
+        <div class="dashboard_sidebar_menus">
+          <ul class="dashboard_menu_lists">
+            {% if position == 'Member' %}
+            <li>
+              <a href="#" class="menuActive" id="dashboard"
+                ><i class="fa fa-home"></i
+                ><span class="menuText">Dashboard</span></a
+              >
+            </li>
+            <li>
+              <a href="#" class="menuActive" id="requestbtn"
+                ><i class="fa fa-plus-circle"></i
+                ><span class="menuText">Request Items</span></a
+              >
+            </li>
+            <li>
+              <a href="#" class="menuActive" id="viewbtn"
+                ><i class="fa fa-list"></i
+                ><span class="menuText">View Inventory</span></a
+              >
+            </li>
+            {% else %}
+            <li>
+              <a href="#" class="menuActive" id="dashboard"
+                ><i class="fa fa-home"></i
+                ><span class="menuText">Dashboard</span></a
+              >
+            </li>
+            <li>
+              <a href="#" class="menuActive" id="viewrequestbtn"
+                ><i class="fa fa-envelope"></i
+                ><span class="menuText">View Requests</span></a
+              >
+            </li>
+            <li>
+              <a href="#" class="menuActive" id="viewbtn"
+                ><i class="fa fa-eye"></i
+                ><span class="menuText">View Inventories</span></a
+              >
+            </li>
+            {% endif %}
+          </ul>
         </div>
-        
-        <div class="dashboard_content_container" id="dashboard_content_container">
-            <div class="dashboard_topNav">
-                <a href="#" id="togglebtn"><i class="fa fa-navicon"></i></a>
-                <a href="#" id="logoutbtn"><i class="fa fa-power-off"></i> Log-out</a>
+      </div>
+
+      <div id="viewRequestsTable" style="display: none">
+        <h2>Pending Item Requests</h2>
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+              <tr>
+                <th>User</th>
+                <th>Item</th>
+                <th>Status</th>
+                <th>Purpose</th>
+                <th>Quantity</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="dashboard_content_container" id="dashboard_content_container">
+        <div class="dashboard_topNav" id="dashboard_topNav">
+          <a href="#" id="togglebtn"><i class="fa fa-navicon"></i></a>
+          <a href="#" id="logoutbtn"><i class="fa fa-power-off"></i> Log-out</a>
+        </div>
+        <div class="dashboard_content">
+          <div class="dashboard_content_main">
+            <div id="dashboardContent">
+              <h1>Welcome to the Dashboard</h1>
             </div>
-            <div class="dashboard_content">
-                <div class="dashboard_content_main">
-                    <div id="dashboardContent">
-                        <h1>Welcome to the Dashboard</h1>
-                    </div>
-                    <div id="inventoryTable" style="display: none;">
-                        <h2>Inventory Items</h2>
-                        <table id="inventoryTableContent" border="1">
-                            <thead>
-                                <tr>
-                                    <th>Item Number</th>
-                                    <th>Item Name</th>
-                                    <th>Quantity</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                    <div id="requestForm" style="display: none;">
-                        <h1 class="text-center">Request Inventory Item</h1>
-                        <form method="POST" action="/request_item" class="mt-4">
-                            <div class="mb-3">
-                                <label for="item_id" class="form-label">Select Item</label>
-                                <select name="item_id" id="item_id" class="form-select" required>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="quantity" class="form-label">Quantity</label>
-                                <input type="number" name="quantity" id="quantity" class="form-control" min="1" required>
-                                <small id="quantityHelp" class="form-text text-muted">Max quantity will be set based on the selected item.</small>
-                            </div>
-                            <div class="mb-3">
-                                <label for="purpose" class="form-label">Purpose</label>
-                                <textarea name="purpose" id="purpose" class="form-control" rows="3" required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary" >Submit Request</button>
-                        </form>
-                    </div>
-                    
+            <div id="inventoryTable" style="display: none">
+              <h2>Inventory Items</h2>
+              <table id="inventoryTableContent">
+                <thead>
+                  <tr>
+                    <th>Item Number</th>
+                    <th>Item Name</th>
+                    <th>Quantity</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div id="requestForm" style="display: none">
+              <h1 class="text-center">Request Inventory Item</h1>
+              <form method="POST" action="/request_item" class="mt-4">
+                <input name="user" type="hidden" value="{{ name }}" />
+                <div class="mb-3">
+                  <label for="item_id" class="form-label">Select Item</label>
+                  <select
+                    name="item_id"
+                    id="item_id"
+                    class="form-select"
+                    required
+                  ></select>
                 </div>
+                <div class="mb-3">
+                  <label for="quantity" class="form-label">Quantity</label>
+                  <input
+                    type="number"
+                    name="quantity"
+                    id="quantity"
+                    class="form-control"
+                    min="1"
+                    required
+                  />
+                  <small id="quantityHelp" class="form-text text-muted"
+                    >Max quantity will be set based on the selected item.</small
+                  >
+                </div>
+                <div class="mb-3">
+                  <label for="purpose" class="form-label">Purpose</label>
+                  <textarea
+                    name="purpose"
+                    id="purpose"
+                    class="form-control"
+                    rows="3"
+                    required
+                  ></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  Submit Request
+                </button>
+              </form>
             </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <script>
-        // Ensure variables are declared only once
-        document.addEventListener('DOMContentLoaded', () => {
-            const logoutbtn = document.getElementById('logoutbtn');
-            const viewbtn = document.getElementById('viewbtn');
-            const requestbtn = document.getElementById('requestbtn');
-            const dashboard = document.getElementById('dashboard');
-            const dashboardContent = document.getElementById('dashboardContent');
-            const inventoryTable = document.getElementById('inventoryTable');
-            const requestForm = document.getElementById('requestForm');
-            const inventoryTableContent = document.querySelector('#inventoryTableContent tbody');
-            const submitbtn = document.querySelector('button[type="submit"]');
-            const viewrequestbtn = document.getElementById('viewrequestbtn');
-            const viewRequestsTable = document.getElementById('viewRequestsTable');
-            const requestsTableBody = viewRequestsTable.querySelector('tbody');
-        
-            // Logout button functionality
-            logoutbtn.addEventListener('click', (event) => {
-                event.preventDefault();
-                const confirmation = confirm("Are you sure you want to log out?");
-                if (confirmation) {
-                    window.location.href = "/";
-                }
-            });
+      // Ensure variables are declared only once
+      document.addEventListener("DOMContentLoaded", () => {
+        const logoutbtn = document.getElementById("logoutbtn");
+        const viewbtn = document.getElementById("viewbtn");
+        if (`{{position}}` === "Member") {
+          btn = document.getElementById("requestbtn");
+        } else {
+          btn = document.getElementById("viewrequestbtn");
+        }
+        const dashboard = document.getElementById("dashboard");
+        const dashboardContent = document.getElementById("dashboardContent");
+        const inventoryTable = document.getElementById("inventoryTable");
+        const requestForm = document.getElementById("requestForm");
+        const inventoryTableContent = document.querySelector(
+          "#inventoryTableContent tbody"
+        );
+        const submitbtn = document.querySelector('button[type="submit"]');
+        const viewRequestsTable = document.getElementById("viewRequestsTable");
+        const requestsTableBody = viewRequestsTable.querySelector("tbody");
+        const timepass = document.getElementById("dashboard_content_container");
+        const topNav = document.getElementById("dashboard_topNav");
+        // Logout button functionality
+        logoutbtn.addEventListener("click", (event) => {
+          event.preventDefault();
+          const confirmation = confirm("Are you sure you want to log out?");
+          if (confirmation) {
+            window.location.href = "/";
+          }
+        });
 
-            dashboard.addEventListener('click',(event)=>{
-                event.preventDefault();
-                dashboardContent.style.display = 'block';
-                inventoryTable.style.display = 'none';
-                requestForm.style.display = 'none';
-                viewRequestsTable.style.display = 'none';
-            })
-        
-            // View requests functionality
-                viewrequestbtn.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    viewRequestsTable.style.display = 'block';
-                    dashboardContent.style.display = 'none';
-                    inventoryTable.style.display = 'none !important';
-                    requestForm.style.display = 'none';
-                    
-        
-                    // Hide other sections
-              
-                    // Fetch requests
-                    fetch('/requests')
-                        .then((response) => {
-                            if (!response.ok) {
-                                throw new Error(`HTTP error! Status: ${response.status}`);
-                            }
-                            return response.json();
-                        })
-                        .then((data) => {
-                            requestsTableBody.innerHTML = ''; // Clear existing rows
-                            data.forEach((request) => {
-                                const row = document.createElement('tr');
-                                row.innerHTML = `
-                                    <td>{{name}}</td>
-                                    <td>${request.item}</td>
-                                    <td>${request.status}</td>
-                                    <td>
-                                        <form action="/admin/approve/{request.user}" method="POST" class="d-inline">
-                                            <button type="submit" class="btn btn-success">Approve</button>
-                                        </form>
-                                        <form action="/admin/reject/{{name}}" method="POST" class="d-inline">
-                                            <button type="submit" class="btn btn-danger">Reject</button>
-                                        </form>
-                                    </td>
-                                `;
-                                requestsTableBody.appendChild(row);
-                            });
-                        })
-                        .catch((error) => {
-                            console.error('Error fetching requests:', error);
-                        });
+        dashboard.addEventListener("click", (event) => {
+          event.preventDefault();
+          dashboardContent.style.display = "block";
+          timepass.style.display = "block";
+          inventoryTable.style.display = "none";
+          requestForm.style.display = "none";
+          viewRequestsTable.style.display = "none";
+          topNav.style.display = "block";
+        });
+
+        // View requests functionality
+        if (`{{position}}` !== "Member") {
+          btn.addEventListener("click", (event) => {
+            event.preventDefault();
+            dashboardContent.style.display = "none";
+            inventoryTable.style.display = "none";
+            requestForm.style.display = "none";
+            viewRequestsTable.style.display = "block";
+            timepass.style.display = "none";
+
+            // Fetch requests
+            fetch("/requests")
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+              })
+              .then((data) => {
+                requestsTableBody.innerHTML = ""; // Clear existing rows
+
+                data.forEach((request) => {
+                  const row = document.createElement("tr");
+
+                  // Create and append table cells for each piece of data
+                  row.appendChild(document.createElement("td")).textContent =
+                    request.name;
+                  row.appendChild(document.createElement("td")).textContent =
+                    request.item;
+                  row.appendChild(document.createElement("td")).textContent =
+                    request.status;
+                  row.appendChild(document.createElement("td")).textContent =
+                    request.purpose;
+                  row.appendChild(document.createElement("td")).textContent =
+                    request.quantity;
+
+                  // Create a table cell for the action buttons
+                  const actionCell = document.createElement("td");
+
+                  // Approve form
+                  const approveForm = document.createElement("form");
+                  approveForm.action = "/approve";
+                  approveForm.method = "POST";
+                  approveForm.classList.add("d-inline");
+
+                  // Hidden fields for request details
+                  const inputNameApprove = document.createElement("input");
+                  inputNameApprove.type = "hidden";
+                  inputNameApprove.name = "naam";
+                  inputNameApprove.value = request.name;
+                  approveForm.appendChild(inputNameApprove);
+
+                  const inputItemApprove = document.createElement("input");
+                  inputItemApprove.type = "hidden";
+                  inputItemApprove.name = "item";
+                  inputItemApprove.value = request.item;
+                  approveForm.appendChild(inputItemApprove);
+
+                  const inputQuantityApprove = document.createElement("input");
+                  inputQuantityApprove.type = "hidden";
+                  inputQuantityApprove.name = "quantity";
+                  inputQuantityApprove.value = request.quantity;
+                  approveForm.appendChild(inputQuantityApprove);
+
+                  const inputPurposeApprove = document.createElement("input");
+                  inputPurposeApprove.type = "hidden";
+                  inputPurposeApprove.name = "purpose";
+                  inputPurposeApprove.value = request.purpose;
+                  approveForm.appendChild(inputPurposeApprove);
+
+                  // Hidden field for logged-in username ({{name}})
+                  const inputUsernameApprove = document.createElement("input");
+                  inputUsernameApprove.type = "hidden";
+                  inputUsernameApprove.name = "username";
+                  inputUsernameApprove.value = "{{name}}"; // Add the logged-in username here
+                  approveForm.appendChild(inputUsernameApprove);
+
+                  const approveButton = document.createElement("button");
+                  approveButton.type = "submit";
+                  approveButton.classList.add("btn", "btn-success");
+                  approveButton.textContent = "Approve";
+                  approveForm.appendChild(approveButton);
+
+                  // Reject form
+                  const rejectForm = document.createElement("form");
+                  rejectForm.action = "/reject";
+                  rejectForm.method = "POST";
+                  rejectForm.classList.add("d-inline", "ms-2"); // Add some margin for spacing
+
+                  // Hidden fields for request details
+                  const inputNameReject = document.createElement("input");
+                  inputNameReject.type = "hidden";
+                  inputNameReject.name = "naam";
+                  inputNameReject.value = request.name;
+                  rejectForm.appendChild(inputNameReject);
+
+                  const inputItemReject = document.createElement("input");
+                  inputItemReject.type = "hidden";
+                  inputItemReject.name = "item";
+                  inputItemReject.value = request.item;
+                  rejectForm.appendChild(inputItemReject);
+
+                  const inputQuantityReject = document.createElement("input");
+                  inputQuantityReject.type = "hidden";
+                  inputQuantityReject.name = "quantity";
+                  inputQuantityReject.value = request.quantity;
+                  rejectForm.appendChild(inputQuantityReject);
+
+                  const inputPurposeReject = document.createElement("input");
+                  inputPurposeReject.type = "hidden";
+                  inputPurposeReject.name = "purpose";
+                  inputPurposeReject.value = request.purpose;
+                  rejectForm.appendChild(inputPurposeReject);
+
+                  // Hidden field for logged-in username ({{name}})
+                  const inputUsernameReject = document.createElement("input");
+                  inputUsernameReject.type = "hidden";
+                  inputUsernameReject.name = "username";
+                  inputUsernameReject.value = "{{name}}"; // Add the logged-in username here
+                  rejectForm.appendChild(inputUsernameReject);
+
+                  const rejectButton = document.createElement("button");
+                  rejectButton.type = "submit";
+                  rejectButton.classList.add("btn", "btn-danger");
+                  rejectButton.textContent = "Reject";
+                  rejectForm.appendChild(rejectButton);
+
+                  // Append both forms to the action cell
+                  actionCell.appendChild(approveForm);
+                  actionCell.appendChild(rejectForm);
+
+                  // Append the action cell to the row
+                  row.appendChild(actionCell);
+
+                  // Append the row to the table body
+                  requestsTableBody.appendChild(row);
                 });
-            
-        
-            // View inventory functionality
-            viewbtn.addEventListener('click', (event) => {
-                event.preventDefault();
-                dashboardContent.style.display = 'none';
-                inventoryTable.style.display = 'block';
-                requestForm.style.display = 'none';
-        
-                fetch('/inventory')
-                    .then(response => response.json())
-                    .then(data => {
-                        inventoryTableContent.innerHTML = ''; // Clear existing rows
-                        data.forEach(item => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
+              })
+              .catch((error) => {
+                console.error("Error fetching requests:", error);
+              });
+          });
+        } else {
+          btn.addEventListener("click", (event) => {
+            event.preventDefault();
+            dashboardContent.style.display = "none";
+            inventoryTable.style.display = "none";
+            requestForm.style.display = "block";
+            viewRequestsTable.style.display = "none";
+            submitbtn.disabled = true;
+          });
+        }
+
+        // View inventory functionality
+        viewbtn.addEventListener("click", (event) => {
+          event.preventDefault();
+          dashboardContent.style.display = "none";
+          inventoryTable.style.display = "block";
+          timepass.style.display = "block";
+          topNav.style.display = "none";
+          requestForm.style.display = "none";
+          viewRequestsTable.style.display = "none";
+
+          fetch("/inventory")
+            .then((response) => response.json())
+            .then((data) => {
+              inventoryTableContent.innerHTML = ""; // Clear existing rows
+              data.forEach((item) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
                                 <td>${item.item_number}</td>
                                 <td>${item.item_name}</td>
                                 <td>${item.quantity}</td>
                             `;
-                            inventoryTableContent.appendChild(row);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error fetching inventory:', error);
-                    });
+                inventoryTableContent.appendChild(row);
+              });
+            })
+            .catch((error) => {
+              console.error("Error fetching inventory:", error);
             });
-        
-            // Request item functionality
-            const dropdown = document.getElementById('item_id');
-            const quantityInput = document.getElementById('quantity');
-            const quantityHelp = document.getElementById('quantityHelp');
-        
-            let itemqty = {};
-            fetch('/request_item')
-                .then(response => response.json())
-                .then(data => {
-                    dropdown.innerHTML = '<option value="">-- Select Item --</option>';
-                    data.forEach(item => {
-                        const option = document.createElement('option');
-                        option.value = item.item_number;
-                        option.textContent = item.item_name;
-                        itemqty[item.item_number] = item.quantity;
-                        dropdown.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching inventory:', error);
-                });
-        
-            dropdown.addEventListener('change', () => {
-                const selecteditem = dropdown.value;
-                if (selecteditem && itemqty[selecteditem] !== undefined) {
-                    const maxqty = itemqty[selecteditem];
-                    quantityHelp.textContent = `Max quantity available: ${maxqty}`;
-                    quantityInput.max = maxqty;
-                    quantityInput.value = '';
-                    submitbtn.disabled = false;
-                } else {
-                    quantityHelp.textContent = 'Please select a valid item';
-                    submitbtn.disabled = true;
-                }
-            });
-        
-            quantityInput.addEventListener('input', () => {
-                const selecteditem = dropdown.value;
-                const maxqty = itemqty[selecteditem];
-                if (quantityInput.value > maxqty) {
-                    alert(`You can't request more than ${maxqty} items`);
-                    quantityInput.value = maxqty;
-                }
-                submitbtn.disabled = quantityInput.value > maxqty || quantityInput.value <= 0;
-            });
-        
-            requestbtn.addEventListener('click', (event) => {
-                event.preventDefault();
-                dashboardContent.style.display = 'none';
-                inventoryTable.style.display = 'none';
-                requestForm.style.display = 'block';
-                submitbtn.disabled = true;
-            });
-        
         });
-        
-    </script>
-</body>
 
+        // Request item functionality
+        const dropdown = document.getElementById("item_id");
+        const quantityInput = document.getElementById("quantity");
+        const quantityHelp = document.getElementById("quantityHelp");
+
+        let itemqty = {};
+        fetch("/request_item")
+          .then((response) => response.json())
+          .then((data) => {
+            dropdown.innerHTML = '<option value="">-- Select Item --</option>';
+            data.forEach((item) => {
+              const option = document.createElement("option");
+              option.value = item.item_number;
+              option.textContent = item.item_name;
+              itemqty[item.item_number] = item.quantity;
+              dropdown.appendChild(option);
+            });
+          })
+          .catch((error) => {
+            console.error("Error fetching inventory:", error);
+          });
+
+        dropdown.addEventListener("change", () => {
+          const selecteditem = dropdown.value;
+          if (selecteditem && itemqty[selecteditem] !== undefined) {
+            const maxqty = itemqty[selecteditem];
+            quantityHelp.textContent = `Max quantity available: ${maxqty}`;
+            quantityInput.max = maxqty;
+            quantityInput.value = "";
+            submitbtn.disabled = false;
+          } else {
+            quantityHelp.textContent = "Please select a valid item";
+            submitbtn.disabled = true;
+          }
+        });
+
+        quantityInput.addEventListener("input", () => {
+          const selecteditem = dropdown.value;
+          const maxqty = itemqty[selecteditem];
+          if (quantityInput.value > maxqty) {
+            alert(`You can't request more than ${maxqty} items`);
+            quantityInput.value = maxqty;
+          }
+          submitbtn.disabled =
+            quantityInput.value > maxqty || quantityInput.value <= 0;
+        });
+      });
+    </script>
+  </body>
 </html>
