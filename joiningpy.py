@@ -1,9 +1,11 @@
+from flask import Flask, flash, jsonify, render_template, request, redirect, session, url_for
 import mysql.connector as con
-from flask import Flask, jsonify, render_template, request, redirect, url_for
 import requests
-app = Flask(__name__)
 from flask_cors import CORS
+
+app = Flask(__name__)
 CORS(app)
+app.secret_key = 'praneel'
 
 mydb = con.connect(
     host='localhost',
@@ -81,10 +83,14 @@ def request_item():
     try:
         if request.method == "POST":
             # Get form data
+            name = request.form["user"]
+            naming = request.form["username"]
             purpose = request.form["purpose"]
             item_id = int(request.form["item_id"])
             qty = int(request.form["quantity"])
             status = "pending"
+            
+            print(name, purpose, item_id, qty, status)
 
             # Fetch item name from CulturalInventory
             cursor.execute("SELECT ItemName FROM CulturalInventory WHERE ID = %s", (item_id,))
@@ -97,13 +103,17 @@ def request_item():
 
             # Insert into requests table
             cursor.execute(
-                "INSERT INTO requests (Item, quantity, purpose, status_) VALUES (%s, %s, %s, %s)",
-                (item_name, qty, purpose, status)
+                "INSERT INTO requests (Item, naam, quantity, purpose, status_) VALUES (%s, %s, %s, %s, %s)",
+                (item_name, name, qty, purpose, status)
             )
             mydb.commit()  # Commit the changes to the database
 
             print("Request successfully added:", (item_name, qty, purpose, status))
-            return redirect('/')
+
+            cursor.execute("SELECT Club, Position FROM details WHERE Name = %s", (name,))
+            club, pos = cursor.fetchone()
+
+            return render_template("admin.html", name=name, position=pos, council=club)
 
         # Fetch available inventory for GET request
         cursor.execute("SELECT ID, ItemName, ItemQty FROM CulturalInventory")
@@ -121,17 +131,17 @@ def request_item():
 
 @app.route("/requests", methods=["GET"])
 def get_requests():
-    try: 
-        cursor.execute("SELECT  ID,Item, status_ FROM requests")
+    try:
+        cursor.execute("SELECT Item, naam, status_, purpose, quantity FROM requests")
         requests_data = cursor.fetchall()
         requests = [
-            { "item": row[0], "status": row[1]}
+            {"item": row[0], "name": row[1], "status": row[2], "purpose": row[3], "quantity": row[4]}
             for row in requests_data
         ]
         print(requests)
         return jsonify(requests), 200
     except Exception as e:
-        print(f"Error fetching requests: {e}")
+        print(f"Error fetching requests: {e}")  # This will print the error message
         return jsonify({"error": "Failed to fetch requests"}), 500
 
 
@@ -145,10 +155,64 @@ def getdata():
     except Exception as e:
         print(f"Error fetching inventory: {e}")
         return jsonify({"error": "Failed to fetch inventory"}), 500
-# @app.route("/requests",methods=["GET","POST"])
-# def gettingrequests():
-    
 
+@app.route('/approve', methods=['POST'])
+def approve():
+    if request.method == 'POST':
+        # Fetch form data
+        naam = request.form['naam']
+        item = request.form['item']
+        quantity = request.form['quantity']
+        purpose = request.form['purpose']
+        name=request.form['username']
+        try:
+            # Delete the request from the 'requests' table
+            cursor.execute("""DELETE FROM requests WHERE naam = %s AND quantity = %s AND Item = %s AND purpose = %s AND TRIM(LOWER(status_)) = 'pending';""", (naam, quantity, item, purpose))
+            mydb.commit()
+
+            # Insert the request into the 'approved' table
+            cursor.execute("""INSERT INTO approved (Item, naam, quantity, purpose) VALUES (%s, %s, %s, %s);""", (item, naam, quantity, purpose))
+            cursor.execute("UPDATE CulturalInventory SET ItemQty = ItemQty - %s WHERE ItemName = %s", (quantity, item))
+            mydb.commit()
+
+            flash('Request approved successfully!', 'success')
+
+            # Fetch club and position for the user
+            cursor.execute("SELECT Club, Position FROM details WHERE Name = %s", (naam,))
+            club, pos = cursor.fetchone()
+
+            return render_template("admin.html", name=name, position=pos, council=club)
+        
+        except Exception as e:
+            print(f"Error in approve function: {e}")
+            mydb.rollback()
+            flash('An error occurred while approving the request.', 'danger')
+
+            # Fetch club and position for the user
+            cursor.execute("SELECT Club, Position FROM details WHERE Name = %s", (name,))
+            club, pos = cursor.fetchone()
+
+            return render_template("admin.html", name=name, position=pos, council=club)
+
+@app.route('/reject', methods=['POST'])
+def reject_request():
+    if request.method == 'POST':
+        # Fetch form data
+        naam = request.form['naam']
+        name=request.form['username']
+        item = request.form['item']
+        quantity = request.form['quantity']
+        purpose = request.form['purpose']
+        
+        # Delete the request from the 'requests' table
+        cursor.execute("""DELETE FROM requests WHERE naam = %s AND quantity = %s AND Item = %s AND purpose = %s;""", (naam, quantity, item, purpose))
+        mydb.commit()
+
+        # Fetch club and position for the user
+        cursor.execute("SELECT Club, Position FROM details WHERE Name = %s", (name,))
+        club, pos = cursor.fetchone()
+
+        return render_template("admin.html", name=name, position=pos, council=club)
 
 if __name__ == "__main__":
     app.run(debug=True)
