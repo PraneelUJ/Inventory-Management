@@ -244,9 +244,9 @@
 
                   // Approve form
                   const approveForm = document.createElement("form");
-                  approveForm.action = "/approve";
+                  approveForm.action = "/reject";
                   approveForm.method = "POST";
-                  approveForm.classList.add("d-inline");
+                  approveForm.classList.add("d-inline", "ms-2"); // Add some margin for spacing
 
                   // Hidden fields for request details
                   const inputNameApprove = document.createElement("input");
@@ -282,9 +282,10 @@
 
                   const approveButton = document.createElement("button");
                   approveButton.type = "submit";
-                  approveButton.classList.add("btn", "btn-success");
+                  approveButton.classList.add("btn", "btn-danger");
                   approveButton.textContent = "Approve";
                   approveForm.appendChild(approveButton);
+
 
                   // Reject form
                   const rejectForm = document.createElement("form");
