@@ -1,4 +1,5 @@
 from flask import Flask, flash, jsonify, render_template, request, redirect, session, url_for
+import mysql
 import mysql.connector as con
 import requests
 from flask_cors import CORS
@@ -83,14 +84,25 @@ def request_item():
     try:
         if request.method == "POST":
             # Get form data
-            name = request.form["user"]
-            naming = request.form["username"]
-            purpose = request.form["purpose"]
-            item_id = int(request.form["item_id"])
-            qty = int(request.form["quantity"])
+            name = request.form.get("user")
+            naming = request.form.get("username")  # Not used in current logic
+            purpose = request.form.get("purpose")
+            item_id = request.form.get("item_id")
+            qty = request.form.get("quantity")
+
+            # Validate inputs
+            if not all([name, purpose, item_id, qty]):
+                return jsonify({"error": "Missing required fields"}), 400
+
+            try:
+                item_id = int(item_id)
+                qty = int(qty)
+            except ValueError:
+                return jsonify({"error": "Invalid data type for item_id or quantity"}), 400
+
             status = "pending"
-            
-            print(name, purpose, item_id, qty, status)
+
+            print(f"Received request: name={name}, purpose={purpose}, item_id={item_id}, quantity={qty}, status={status}")
 
             # Fetch item name from CulturalInventory
             cursor.execute("SELECT ItemName FROM CulturalInventory WHERE ID = %s", (item_id,))
@@ -110,24 +122,36 @@ def request_item():
 
             print("Request successfully added:", (item_name, qty, purpose, status))
 
+            # Fetch user details
             cursor.execute("SELECT Club, Position FROM details WHERE Name = %s", (name,))
-            club, pos = cursor.fetchone()
+            user_data = cursor.fetchone()
+
+            if user_data:
+                club, pos = user_data
+            else:
+                club, pos = "Unknown Club", "Unknown Position"
 
             return render_template("admin.html", name=name, position=pos, council=club)
 
-        # Fetch available inventory for GET request
+        # Handle GET request: Fetch available inventory
         cursor.execute("SELECT ID, ItemName, ItemQty FROM CulturalInventory")
         items = cursor.fetchall()
+
         inventory = [
             {"item_number": row[0], "item_name": row[1], "quantity": row[2]}
             for row in items
             if row[2] > 0
         ]
+
+        print("Available inventory:", inventory)
         return jsonify(inventory), 200
 
+    except mysql.connector.Error as db_err:
+        print(f"Database error: {db_err}")
+        return jsonify({"error": "Database operation failed"}), 500
     except Exception as e:
-        print(f"Error in request_item: {e}")
-        return jsonify({"error": "An error occurred while processing your requests"}), 500
+        print(f"Unexpected error in request_item: {e}")
+        return jsonify({"error": "An unexpected error occurred"}), 500
 
 @app.route("/requests", methods=["GET"])
 def get_requests():
@@ -178,7 +202,7 @@ def approve():
             flash('Request approved successfully!', 'success')
 
             # Fetch club and position for the user
-            cursor.execute("SELECT Club, Position FROM details WHERE Name = %s", (naam,))
+            cursor.execute("SELECT Club, Position FROM details WHERE Name = %s", (name,))
             club, pos = cursor.fetchone()
 
             return render_template("admin.html", name=name, position=pos, council=club)
