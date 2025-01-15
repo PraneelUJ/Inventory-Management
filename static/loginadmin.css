@@ -87,3 +87,262 @@ div.dashboard_content{
 ul.dashboard_menu_lists li a i{
     font-size: 25px;
 }
+
+/* General Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px;
+    text-align: left;
+  }
+  
+  /* Table Headers */
+  table thead tr {
+    background-color: #4CAF50; /* Green header */
+    color: white;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  /* Table Rows */
+  table tbody tr:nth-child(even) {
+    background-color: #f2f2f2; /* Alternating row color */
+  }
+  
+  table tbody tr:hover {
+    background-color: #ddd; /* Highlight row on hover */
+  }
+  
+  /* Table Borders */
+  table th, table td {
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+  }
+  
+  /* Table Headings */
+  h2 {
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  /* Responsive Table */
+  @media screen and (max-width: 768px) {
+    table {
+      font-size: 14px;
+    }
+    table th, table td {
+      padding: 8px 10px;
+    }
+  }
+  
+  /* Center Alignment for Div Containers */
+  #inventoryTable, #approvedTable {
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    border-radius: 8px;
+  }
+  
+  /* Add subtle animation on hover */
+  table tbody tr:hover td {
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  /* Scrollable Table for Overflow */
+  #inventoryTableContent, #approvedTableContent {
+    overflow-x: auto;
+    display: block;
+  }
+  
+  /* General Styling for Form Container */
+#requestForm {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 600px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Form Title */
+  #requestForm h1 {
+    font-family: 'Arial', sans-serif;
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Form Labels */
+  #requestForm .form-label {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 8px;
+    display: block;
+  }
+  
+  /* Form Inputs */
+  #requestForm .form-control, 
+  #requestForm .form-select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  /* Input Focus Effect */
+  #requestForm .form-control:focus, 
+  #requestForm .form-select:focus {
+    border-color: #4CAF50; /* Green border on focus */
+    outline: none;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+  }
+  
+  /* Small Help Text */
+  #requestForm .form-text {
+    font-size: 14px;
+    color: #888;
+    margin-top: 5px;
+  }
+  
+  /* Textarea */
+  #requestForm textarea {
+    resize: vertical; /* Allow vertical resizing only */
+  }
+  
+  /* Submit Button */
+  #requestForm .btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #4CAF50; /* Green background */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  #requestForm .btn:hover {
+    background-color: #45a049; /* Slightly darker green on hover */
+  }
+  
+  /* Responsive Design */
+  @media screen and (max-width: 768px) {
+    #requestForm {
+      padding: 15px;
+      max-width: 90%;
+    }
+  
+    #requestForm h1 {
+      font-size: 24px;
+    }
+  
+    #requestForm .btn {
+      font-size: 16px;
+    }
+  }
+  /* General Styling for the Table Container */
+#viewRequestsTable {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 90%;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Table Title */
+  #viewRequestsTable h2 {
+    font-family: 'Arial', sans-serif;
+    font-size: 26px;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Table Styling */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 16px;
+    text-align: left;
+  }
+  
+  /* Table Headers */
+  .table thead.table-dark {
+    background-color: #343a40; /* Dark background for header */
+    color: white;
+  }
+  
+  .table thead th {
+    padding: 12px 15px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #ccc;
+  }
+  
+  /* Table Body Rows */
+  .table tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternating row colors */
+  }
+  
+  .table tbody tr:hover {
+    background-color: #f1f1f1; /* Highlight row on hover */
+  }
+  
+  /* Table Cells */
+  .table td {
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    text-align: center;
+  }
+  
+  /* Responsive Table */
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  /* Table Borders */
+  .table-bordered {
+    border: 1px solid #ddd;
+  }
+  
+  /* Striped Rows */
+  .table-striped tbody tr:nth-child(odd) {
+    background-color: #f2f2f2; /* Lighter alternating rows */
+  }
+  
+  /* Responsive Design */
+  @media screen and (max-width: 768px) {
+    #viewRequestsTable {
+      padding: 15px;
+    }
+  
+    .table {
+      font-size: 14px;
+    }
+  
+    .table thead th, .table td {
+      padding: 10px;
+    }
+  }
+  
+  /* Center Alignment for Empty State */
+  #viewRequestsTable .empty-message {
+    text-align: center;
+    font-size: 18px;
+    color: #888;
+    margin-top: 20px;
+  }
+  
