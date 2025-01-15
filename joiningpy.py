@@ -188,35 +188,55 @@ def approve():
         item = request.form['item']
         quantity = request.form['quantity']
         purpose = request.form['purpose']
-        name=request.form['username']
+        name = request.form['username']
+
         try:
+            # Fetch email for the user
+            cursor.execute("SELECT Email, Club, Position FROM details WHERE Name = %s", (name,))
+            result = cursor.fetchone()
+            if not result:
+                flash('User details not found.', 'danger')
+                return redirect('/admin')  # Adjust the redirect as per your flow
+
+            email, club, pos = result
+
             # Delete the request from the 'requests' table
-            cursor.execute("""DELETE FROM requests WHERE naam = %s AND quantity = %s AND Item = %s AND purpose = %s AND TRIM(LOWER(status_)) = 'pending';""", (naam, quantity, item, purpose))
+            print([naam,item,quantity,purpose,name])
+            cursor.execute("""
+                DELETE FROM requests 
+                WHERE naam = %s AND quantity = %s AND Item = %s AND purpose = %s 
+                AND TRIM(LOWER(status_)) = 'pending';
+            """, (naam, quantity, item, purpose))
             mydb.commit()
 
-            # Insert the request into the 'approved' table
-            cursor.execute("""INSERT INTO approved (Item, naam, quantity, purpose) VALUES (%s, %s, %s, %s);""", (item, naam, quantity, purpose))
-            cursor.execute("UPDATE CulturalInventory SET ItemQty = ItemQty - %s WHERE ItemName = %s", (quantity, item))
+            # Insert the request into the 'approved' table with email
+            cursor.execute("""
+                INSERT INTO approved (Item, naam, quantity, purpose, email) 
+                VALUES (%s, %s, %s, %s, %s);
+            """, (item, naam, quantity, purpose, email))
+
+            # Update the inventory
+            cursor.execute("""
+                UPDATE CulturalInventory 
+                SET ItemQty = ItemQty - %s 
+                WHERE ItemName = %s;
+            """, (quantity, item))
             mydb.commit()
 
             flash('Request approved successfully!', 'success')
-
-            # Fetch club and position for the user
-            cursor.execute("SELECT Club, Position FROM details WHERE Name = %s", (name,))
-            club, pos = cursor.fetchone()
-
             return render_template("admin.html", name=name, position=pos, council=club)
-        
+
         except Exception as e:
             print(f"Error in approve function: {e}")
             mydb.rollback()
             flash('An error occurred while approving the request.', 'danger')
 
-            # Fetch club and position for the user
+            # Fetch club and position for the user again in case of error
             cursor.execute("SELECT Club, Position FROM details WHERE Name = %s", (name,))
             club, pos = cursor.fetchone()
 
             return render_template("admin.html", name=name, position=pos, council=club)
+
 
 @app.route('/reject', methods=['POST'])
 def reject_request():
@@ -237,6 +257,32 @@ def reject_request():
         club, pos = cursor.fetchone()
 
         return render_template("admin.html", name=name, position=pos, council=club)
+@app.route('/approvedtable', methods=['GET', 'POST'])
+def approvedtable():
+    try:
+        # Execute query to fetch approved items
+        cursor.execute("SELECT Item, naam, quantity, purpose, email FROM approved")
+        items = cursor.fetchall()
+
+        # Format the results into a list of dictionaries
+        inventory = [
+            {"Item": row[0], "Holder_Name": row[1], "Quantity": row[2], "Purpose": row[3], "Email": row[4]}
+            for row in items
+        ]
+
+        # Return the JSON response
+        return jsonify(inventory), 200
+
+    except mysql.connector.Error as db_err:
+        # Handle database-specific errors
+        print(f"Database error: {db_err}")
+        return jsonify({"error": "Database operation failed"}), 500
+
+    except Exception as e:
+        # Handle unexpected errors
+        print(f"Unexpected error in approvedtable: {e}")
+        return jsonify({"error": "An unexpected error occurred"}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)
