@@ -50,6 +50,12 @@
                 ><span class="menuText">View Inventory</span></a
               >
             </li>
+            <li>
+              <a href="#" class="menuActive" id="approvedbtn"
+                ><i class="fa fa-check"></i
+                ><span class="menuText">Approved Items</span></a
+              >
+            </li>
             {% else %}
             <li>
               <a href="#" class="menuActive" id="dashboard"
@@ -67,6 +73,12 @@
               <a href="#" class="menuActive" id="viewbtn"
                 ><i class="fa fa-eye"></i
                 ><span class="menuText">View Inventories</span></a
+              >
+            </li>
+            <li>
+              <a href="#" class="menuActive" id="approvedbtn"
+                ><i class="fa fa-check"></i
+                ><span class="menuText">Approved Items</span></a
               >
             </li>
             {% endif %}
@@ -110,6 +122,21 @@
                     <th>Item Number</th>
                     <th>Item Name</th>
                     <th>Quantity</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div id="approvedTable" style="display: none">
+              <h2>Approved Items</h2>
+              <table id="approvedTableContent">
+                <thead>
+                  <tr>
+                    <th>Item </th>
+                    <th>Holder Name</th>
+                    <th>Quantity</th>
+                    <th>Purpose</th>
+                    <th>Email</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -167,6 +194,7 @@
       document.addEventListener("DOMContentLoaded", () => {
         const logoutbtn = document.getElementById("logoutbtn");
         const viewbtn = document.getElementById("viewbtn");
+        const approvedbtn = document.getElementById("approvedbtn");
         if (`{{position}}` === "Member") {
           btn = document.getElementById("requestbtn");
         } else {
@@ -175,9 +203,13 @@
         const dashboard = document.getElementById("dashboard");
         const dashboardContent = document.getElementById("dashboardContent");
         const inventoryTable = document.getElementById("inventoryTable");
+        const approvedTable = document.getElementById("approvedTable");
         const requestForm = document.getElementById("requestForm");
         const inventoryTableContent = document.querySelector(
           "#inventoryTableContent tbody"
+        );
+        const approvedTableContent = document.querySelector(
+          "#approvedTableContent tbody"
         );
         const submitbtn = document.querySelector('button[type="submit"]');
         const viewRequestsTable = document.getElementById("viewRequestsTable");
@@ -201,6 +233,7 @@
           requestForm.style.display = "none";
           viewRequestsTable.style.display = "none";
           topNav.style.display = "block";
+          approvedTable.style.display = "none";
         });
 
         // View requests functionality
@@ -209,6 +242,7 @@
             event.preventDefault();
             dashboardContent.style.display = "none";
             inventoryTable.style.display = "none";
+            approvedTable.style.display = "none";
             requestForm.style.display = "none";
             viewRequestsTable.style.display = "block";
             timepass.style.display = "none";
@@ -244,7 +278,7 @@
 
                   // Approve form
                   const approveForm = document.createElement("form");
-                  approveForm.action = "/reject";
+                  approveForm.action = "/approve";
                   approveForm.method = "POST";
                   approveForm.classList.add("d-inline", "ms-2"); // Add some margin for spacing
 
@@ -362,6 +396,7 @@
           event.preventDefault();
           dashboardContent.style.display = "none";
           inventoryTable.style.display = "block";
+          approvedTable.style.display = "none";
           timepass.style.display = "block";
           topNav.style.display = "none";
           requestForm.style.display = "none";
@@ -385,6 +420,52 @@
               console.error("Error fetching inventory:", error);
             });
         });
+
+        //approved table functionality
+        approvedbtn.addEventListener("click", (event) => {
+          event.preventDefault();
+          console.log("Approved button clicked");
+        
+          // Toggle UI elements
+          dashboardContent.style.display = "none";
+          inventoryTable.style.display = "none";
+          approvedTable.style.display = "block";
+          timepass.style.display = "block";
+          topNav.style.display = "none";
+          requestForm.style.display = "none";
+          viewRequestsTable.style.display = "none";
+        
+          // Fetch data from the approved table endpoint
+          fetch("/approvedtable")
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              return response.json();
+            })
+            .then((data) => {
+              console.log("Fetched data:", data); // Debug log
+              approvedTableContent.innerHTML = ""; // Clear existing rows
+        
+              // Populate table with fetched data
+              data.forEach((item) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                  <td>${item.Item}</td>
+                  <td>${item.Holder_Name}</td>
+                  <td>${item.Quantity}</td>
+                  <td>${item.Purpose}</td>
+                  <td>${item.Email}</td>
+                `;
+                approvedTableContent.appendChild(row);
+              });
+            })
+            .catch((error) => {
+              console.error("Error fetching approved table data:", error);
+              alert("Failed to load approved table data. Please try again.");
+            });
+        });
+        
 
         // Request item functionality
         const dropdown = document.getElementById("item_id");
