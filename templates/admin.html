@@ -1,288 +1,520 @@
-from flask import Flask, flash, jsonify, render_template, request, redirect, session, url_for
-import mysql
-import mysql.connector as con
-import requests
-from flask_cors import CORS
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Inventory Management System</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='loginadmin.css') }}"
+    />
+    <script src="https://use.fontawesome.com/0c7a3095b5.js"></script>
+  </head>
 
-app = Flask(__name__)
-CORS(app)
-app.secret_key = 'praneel'
+  <body>
+    <div class="dashboardMainContainer">
+      <div class="dashboard_sidebar" id="dashboard_sidebar">
+        <h3 class="dashboard_logo" id="dashboard_logo">IMS</h3>
+        <div class="dashboard_sidebar_user">
+          <img
+            src="{{ url_for('static', filename='download.png') }}"
+            alt="user image"
+            id="userimage"
+          />
+          <span>{{ name }}</span>
+          {% if council %}
+          <span>{{ council }}</span>
+          {% else %}
+          <span>Admin</span>
+          {% endif %}
+        </div>
+        <div class="dashboard_sidebar_menus">
+          <ul class="dashboard_menu_lists">
+            {% if position == 'Member' %}
+            <li>
+              <a href="#" class="menuActive" id="dashboard"
+                ><i class="fa fa-home"></i
+                ><span class="menuText">Dashboard</span></a
+              >
+            </li>
+            <li>
+              <a href="#" class="menuActive" id="requestbtn"
+                ><i class="fa fa-plus-circle"></i
+                ><span class="menuText">Request Items</span></a
+              >
+            </li>
+            <li>
+              <a href="#" class="menuActive" id="viewbtn"
+                ><i class="fa fa-list"></i
+                ><span class="menuText">View Inventory</span></a
+              >
+            </li>
+            <li>
+              <a href="#" class="menuActive" id="approvedbtn"
+                ><i class="fa fa-check"></i
+                ><span class="menuText">Approved Items</span></a
+              >
+            </li>
+            {% else %}
+            <li>
+              <a href="#" class="menuActive" id="dashboard"
+                ><i class="fa fa-home"></i
+                ><span class="menuText">Dashboard</span></a
+              >
+            </li>
+            <li>
+              <a href="#" class="menuActive" id="viewrequestbtn"
+                ><i class="fa fa-envelope"></i
+                ><span class="menuText">View Requests</span></a
+              >
+            </li>
+            <li>
+              <a href="#" class="menuActive" id="viewbtn"
+                ><i class="fa fa-eye"></i
+                ><span class="menuText">View Inventories</span></a
+              >
+            </li>
+            <li>
+              <a href="#" class="menuActive" id="approvedbtn"
+                ><i class="fa fa-check"></i
+                ><span class="menuText">Approved Items</span></a
+              >
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
 
-mydb = con.connect(
-    host='localhost',
-    user='root',
-    passwd='tanishq20@5',
-    database='inventory_management'
-)
-cursor = mydb.cursor()
+      <div id="viewRequestsTable" style="display: none">
+        <h2>Pending Item Requests</h2>
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+              <tr>
+                <th>User</th>
+                <th>Item</th>
+                <th>Status</th>
+                <th>Purpose</th>
+                <th>Quantity</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
 
-GOOGLE_CLIENT_ID = "669359779182-djs6p4jjp9dfogpb3lakcqnu0rnbdanf.apps.googleusercontent.com"
+      <div class="dashboard_content_container" id="dashboard_content_container">
+        <div class="dashboard_topNav" id="dashboard_topNav">
+          <a href="#" id="togglebtn"><i class="fa fa-navicon"></i></a>
+          <a href="#" id="logoutbtn"><i class="fa fa-power-off"></i> Log-out</a>
+        </div>
+        <div class="dashboard_content">
+          <div class="dashboard_content_main">
+            <div id="dashboardContent">
+              <h1>Welcome to the Dashboard</h1>
+            </div>
+            <div id="inventoryTable" style="display: none">
+              <h2>Inventory Items</h2>
+              <table id="inventoryTableContent">
+                <thead>
+                  <tr>
+                    <th>Item Number</th>
+                    <th>Item Name</th>
+                    <th>Quantity</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div id="approvedTable" style="display: none">
+              <h2>Approved Items</h2>
+              <table id="approvedTableContent">
+                <thead>
+                  <tr>
+                    <th>Item </th>
+                    <th>Holder Name</th>
+                    <th>Quantity</th>
+                    <th>Purpose</th>
+                    <th>Email</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div id="requestForm" style="display: none">
+              <h1 class="text-center">Request Inventory Item</h1>
+              <form method="POST" action="/request_item" class="mt-4">
+                <input name="user" type="hidden" value="{{ name }}" />
+                <div class="mb-3">
+                  <label for="item_id" class="form-label">Select Item</label>
+                  <select
+                    name="item_id"
+                    id="item_id"
+                    class="form-select"
+                    required
+                  ></select>
+                </div>
+                <div class="mb-3">
+                  <label for="quantity" class="form-label">Quantity</label>
+                  <input
+                    type="number"
+                    name="quantity"
+                    id="quantity"
+                    class="form-control"
+                    min="1"
+                    required
+                  />
+                  <small id="quantityHelp" class="form-text text-muted"
+                    >Max quantity will be set based on the selected item.</small
+                  >
+                </div>
+                <div class="mb-3">
+                  <label for="purpose" class="form-label">Purpose</label>
+                  <textarea
+                    name="purpose"
+                    id="purpose"
+                    class="form-control"
+                    rows="3"
+                    required
+                  ></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  Submit Request
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-@app.route("/", methods=["GET", "POST"])
-def data():
-    return render_template("login.html")
+    <script>
+      // Ensure variables are declared only once
+      document.addEventListener("DOMContentLoaded", () => {
+        const logoutbtn = document.getElementById("logoutbtn");
+        const viewbtn = document.getElementById("viewbtn");
+        const approvedbtn = document.getElementById("approvedbtn");
+        if (`{{position}}` === "Member") {
+          btn = document.getElementById("requestbtn");
+        } else {
+          btn = document.getElementById("viewrequestbtn");
+        }
+        const dashboard = document.getElementById("dashboard");
+        const dashboardContent = document.getElementById("dashboardContent");
+        const inventoryTable = document.getElementById("inventoryTable");
+        const approvedTable = document.getElementById("approvedTable");
+        const requestForm = document.getElementById("requestForm");
+        const inventoryTableContent = document.querySelector(
+          "#inventoryTableContent tbody"
+        );
+        const approvedTableContent = document.querySelector(
+          "#approvedTableContent tbody"
+        );
+        const submitbtn = document.querySelector('button[type="submit"]');
+        const viewRequestsTable = document.getElementById("viewRequestsTable");
+        const requestsTableBody = viewRequestsTable.querySelector("tbody");
+        const timepass = document.getElementById("dashboard_content_container");
+        const topNav = document.getElementById("dashboard_topNav");
+        // Logout button functionality
+        logoutbtn.addEventListener("click", (event) => {
+          event.preventDefault();
+          const confirmation = confirm("Are you sure you want to log out?");
+          if (confirmation) {
+            window.location.href = "/";
+          }
+        });
 
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        name = request.form["username"]
-        password = request.form["password"]
+        dashboard.addEventListener("click", (event) => {
+          event.preventDefault();
+          dashboardContent.style.display = "block";
+          timepass.style.display = "block";
+          inventoryTable.style.display = "none";
+          requestForm.style.display = "none";
+          viewRequestsTable.style.display = "none";
+          topNav.style.display = "block";
+          approvedTable.style.display = "none";
+        });
 
-        cursor.execute("SELECT Password FROM details WHERE Name = %s", (name,))
-        result = cursor.fetchone()
-        cursor.execute("SELECT Club FROM details WHERE Name = %s", (name,))
-        club = cursor.fetchone()
-        cursor.execute("SELECT Position FROM details WHERE Name = %s", (name,))
-        pos = cursor.fetchone()
+        // View requests functionality
+        if (`{{position}}` !== "Member") {
+          btn.addEventListener("click", (event) => {
+            event.preventDefault();
+            dashboardContent.style.display = "none";
+            inventoryTable.style.display = "none";
+            approvedTable.style.display = "none";
+            requestForm.style.display = "none";
+            viewRequestsTable.style.display = "block";
+            timepass.style.display = "none";
 
-        if result and result[0] == password:
-            print("Login successful")
-            return render_template("admin.html", name=name, council=club[0], position=pos[0])
-        else:
-            print("Incorrect username/password")
-            message = "Incorrect Username/Password"
-            return render_template("login.html", msg=message)
+            // Fetch requests
+            fetch("/requests")
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+              })
+              .then((data) => {
+                requestsTableBody.innerHTML = ""; // Clear existing rows
 
-    return render_template("login.html")
+                data.forEach((request) => {
+                  const row = document.createElement("tr");
 
-@app.route("/google-login", methods=["POST", "GET"])
-def googlelogin():
-    token = request.json.get("id_token")
-    url = f"https://oauth2.googleapis.com/tokeninfo?id_token={token}"
-    response = requests.get(url)
-    userinfo = response.json()
-    
-    if response.status_code == 200:
-        email = userinfo.get("email")
-        name = userinfo.get("name")
-        position = userinfo.get("position")
+                  // Create and append table cells for each piece of data
+                  row.appendChild(document.createElement("td")).textContent =
+                    request.name;
+                  row.appendChild(document.createElement("td")).textContent =
+                    request.item;
+                  row.appendChild(document.createElement("td")).textContent =
+                    request.status;
+                  row.appendChild(document.createElement("td")).textContent =
+                    request.purpose;
+                  row.appendChild(document.createElement("td")).textContent =
+                    request.quantity;
+
+                  // Create a table cell for the action buttons
+                  const actionCell = document.createElement("td");
+
+                  // Approve form
+                  const approveForm = document.createElement("form");
+                  approveForm.action = "/approve";
+                  approveForm.method = "POST";
+                  approveForm.classList.add("d-inline", "ms-2"); // Add some margin for spacing
+
+                  // Hidden fields for request details
+                  const inputNameApprove = document.createElement("input");
+                  inputNameApprove.type = "hidden";
+                  inputNameApprove.name = "naam";
+                  inputNameApprove.value = request.name;
+                  approveForm.appendChild(inputNameApprove);
+
+                  const inputItemApprove = document.createElement("input");
+                  inputItemApprove.type = "hidden";
+                  inputItemApprove.name = "item";
+                  inputItemApprove.value = request.item;
+                  approveForm.appendChild(inputItemApprove);
+
+                  const inputQuantityApprove = document.createElement("input");
+                  inputQuantityApprove.type = "hidden";
+                  inputQuantityApprove.name = "quantity";
+                  inputQuantityApprove.value = request.quantity;
+                  approveForm.appendChild(inputQuantityApprove);
+
+                  const inputPurposeApprove = document.createElement("input");
+                  inputPurposeApprove.type = "hidden";
+                  inputPurposeApprove.name = "purpose";
+                  inputPurposeApprove.value = request.purpose;
+                  approveForm.appendChild(inputPurposeApprove);
+
+                  // Hidden field for logged-in username ({{name}})
+                  const inputUsernameApprove = document.createElement("input");
+                  inputUsernameApprove.type = "hidden";
+                  inputUsernameApprove.name = "username";
+                  inputUsernameApprove.value = "{{name}}"; // Add the logged-in username here
+                  approveForm.appendChild(inputUsernameApprove);
+
+                  const approveButton = document.createElement("button");
+                  approveButton.type = "submit";
+                  approveButton.classList.add("btn", "btn-danger");
+                  approveButton.textContent = "Approve";
+                  approveForm.appendChild(approveButton);
+
+
+                  // Reject form
+                  const rejectForm = document.createElement("form");
+                  rejectForm.action = "/reject";
+                  rejectForm.method = "POST";
+                  rejectForm.classList.add("d-inline", "ms-2"); // Add some margin for spacing
+
+                  // Hidden fields for request details
+                  const inputNameReject = document.createElement("input");
+                  inputNameReject.type = "hidden";
+                  inputNameReject.name = "naam";
+                  inputNameReject.value = request.name;
+                  rejectForm.appendChild(inputNameReject);
+
+                  const inputItemReject = document.createElement("input");
+                  inputItemReject.type = "hidden";
+                  inputItemReject.name = "item";
+                  inputItemReject.value = request.item;
+                  rejectForm.appendChild(inputItemReject);
+
+                  const inputQuantityReject = document.createElement("input");
+                  inputQuantityReject.type = "hidden";
+                  inputQuantityReject.name = "quantity";
+                  inputQuantityReject.value = request.quantity;
+                  rejectForm.appendChild(inputQuantityReject);
+
+                  const inputPurposeReject = document.createElement("input");
+                  inputPurposeReject.type = "hidden";
+                  inputPurposeReject.name = "purpose";
+                  inputPurposeReject.value = request.purpose;
+                  rejectForm.appendChild(inputPurposeReject);
+
+                  // Hidden field for logged-in username ({{name}})
+                  const inputUsernameReject = document.createElement("input");
+                  inputUsernameReject.type = "hidden";
+                  inputUsernameReject.name = "username";
+                  inputUsernameReject.value = "{{name}}"; // Add the logged-in username here
+                  rejectForm.appendChild(inputUsernameReject);
+
+                  const rejectButton = document.createElement("button");
+                  rejectButton.type = "submit";
+                  rejectButton.classList.add("btn", "btn-danger");
+                  rejectButton.textContent = "Reject";
+                  rejectForm.appendChild(rejectButton);
+
+                  // Append both forms to the action cell
+                  actionCell.appendChild(approveForm);
+                  actionCell.appendChild(rejectForm);
+
+                  // Append the action cell to the row
+                  row.appendChild(actionCell);
+
+                  // Append the row to the table body
+                  requestsTableBody.appendChild(row);
+                });
+              })
+              .catch((error) => {
+                console.error("Error fetching requests:", error);
+              });
+          });
+        } else {
+          btn.addEventListener("click", (event) => {
+            event.preventDefault();
+            dashboardContent.style.display = "none";
+            inventoryTable.style.display = "none";
+            requestForm.style.display = "block";
+            viewRequestsTable.style.display = "none";
+            submitbtn.disabled = true;
+            approvedTable.style.display = "none";
+          });
+        }
+
+        // View inventory functionality
+        viewbtn.addEventListener("click", (event) => {
+          event.preventDefault();
+          dashboardContent.style.display = "none";
+          inventoryTable.style.display = "block";
+          approvedTable.style.display = "none";
+          timepass.style.display = "block";
+          topNav.style.display = "none";
+          requestForm.style.display = "none";
+          viewRequestsTable.style.display = "none";
+
+          fetch("/inventory")
+            .then((response) => response.json())
+            .then((data) => {
+              inventoryTableContent.innerHTML = ""; // Clear existing rows
+              data.forEach((item) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                                <td>${item.item_number}</td>
+                                <td>${item.item_name}</td>
+                                <td>${item.quantity}</td>
+                            `;
+                inventoryTableContent.appendChild(row);
+              });
+            })
+            .catch((error) => {
+              console.error("Error fetching inventory:", error);
+            });
+        });
+
+        //approved table functionality
+        approvedbtn.addEventListener("click", (event) => {
+          event.preventDefault();
+          console.log("Approved button clicked");
         
-        cursor.execute("SELECT Position, Club FROM details WHERE Email = %s", (email,))
-        userdata = cursor.fetchone()
+          // Toggle UI elements
+          dashboardContent.style.display = "none";
+          inventoryTable.style.display = "none";
+          approvedTable.style.display = "block";
+          timepass.style.display = "block";
+          topNav.style.display = "none";
+          requestForm.style.display = "none";
+          viewRequestsTable.style.display = "none";
         
-        if userdata:
-            position, club = userdata
-
-            return jsonify({
-                "success": True,
-                "message": "OK",
-                "name": name,
-                "position": position
-            }), 200
-        else:
-            return jsonify({
-                "success": False,
-                "message": "User Not Found",
-                "name": name,
-                "position": position
-            }), 404
-    else:
-        return jsonify({"success": False, "message": "Invalid token"}), 400
-
-@app.route("/request_item", methods=["GET", "POST"])
-def request_item():
-    try:
-        if request.method == "POST":
-            # Get form data
-            name = request.form.get("user")
-            naming = request.form.get("username")  # Not used in current logic
-            purpose = request.form.get("purpose")
-            item_id = request.form.get("item_id")
-            qty = request.form.get("quantity")
-
-            # Validate inputs
-            if not all([name, purpose, item_id, qty]):
-                return jsonify({"error": "Missing required fields"}), 400
-
-            try:
-                item_id = int(item_id)
-                qty = int(qty)
-            except ValueError:
-                return jsonify({"error": "Invalid data type for item_id or quantity"}), 400
-
-            status = "pending"
-
-            print(f"Received request: name={name}, purpose={purpose}, item_id={item_id}, quantity={qty}, status={status}")
-
-            # Fetch item name from CulturalInventory
-            cursor.execute("SELECT ItemName FROM CulturalInventory WHERE ID = %s", (item_id,))
-            item_data = cursor.fetchone()
-
-            if not item_data:
-                return jsonify({"error": "Item not found"}), 404
-
-            item_name = item_data[0]
-
-            # Insert into requests table
-            cursor.execute(
-                "INSERT INTO requests (Item, naam, quantity, purpose, status_) VALUES (%s, %s, %s, %s, %s)",
-                (item_name, name, qty, purpose, status)
-            )
-            mydb.commit()  # Commit the changes to the database
-
-            print("Request successfully added:", (item_name, qty, purpose, status))
-
-            # Fetch user details
-            cursor.execute("SELECT Club, Position FROM details WHERE Name = %s", (name,))
-            user_data = cursor.fetchone()
-
-            if user_data:
-                club, pos = user_data
-            else:
-                club, pos = "Unknown Club", "Unknown Position"
-
-            return render_template("admin.html", name=name, position=pos, council=club)
-
-        # Handle GET request: Fetch available inventory
-        cursor.execute("SELECT ID, ItemName, ItemQty FROM CulturalInventory")
-        items = cursor.fetchall()
-
-        inventory = [
-            {"item_number": row[0], "item_name": row[1], "quantity": row[2]}
-            for row in items
-            if row[2] > 0
-        ]
-
-        print("Available inventory:", inventory)
-        return jsonify(inventory), 200
-
-    except mysql.connector.Error as db_err:
-        print(f"Database error: {db_err}")
-        return jsonify({"error": "Database operation failed"}), 500
-    except Exception as e:
-        print(f"Unexpected error in request_item: {e}")
-        return jsonify({"error": "An unexpected error occurred"}), 500
-
-@app.route("/requests", methods=["GET"])
-def get_requests():
-    try:
-        cursor.execute("SELECT Item, naam, status_, purpose, quantity FROM requests")
-        requests_data = cursor.fetchall()
-        requests = [
-            {"item": row[0], "name": row[1], "status": row[2], "purpose": row[3], "quantity": row[4]}
-            for row in requests_data
-        ]
-        print(requests)
-        return jsonify(requests), 200
-    except Exception as e:
-        print(f"Error fetching requests: {e}")  # This will print the error message
-        return jsonify({"error": "Failed to fetch requests"}), 500
-
-
-@app.route("/inventory", methods=["GET"])
-def getdata():
-    try:
-        cursor.execute("SELECT ID, ItemName, ItemQty FROM CulturalInventory")
-        data = cursor.fetchall()
-        inventory = [{"item_number": row[0], "item_name": row[1], "quantity": row[2]} for row in data]
-        return jsonify(inventory)
-    except Exception as e:
-        print(f"Error fetching inventory: {e}")
-        return jsonify({"error": "Failed to fetch inventory"}), 500
-
-@app.route('/approve', methods=['POST'])
-def approve():
-    if request.method == 'POST':
-        # Fetch form data
-        naam = request.form['naam']
-        item = request.form['item']
-        quantity = request.form['quantity']
-        purpose = request.form['purpose']
-        name = request.form['username']
-
-        try:
-            # Fetch email for the user
-            cursor.execute("SELECT Email, Club, Position FROM details WHERE Name = %s", (name,))
-            result = cursor.fetchone()
-            if not result:
-                flash('User details not found.', 'danger')
-                return redirect('/admin')  # Adjust the redirect as per your flow
-
-            email, club, pos = result
-
-            # Delete the request from the 'requests' table
-            print([naam,item,quantity,purpose,name])
-            cursor.execute("""
-                DELETE FROM requests 
-                WHERE naam = %s AND quantity = %s AND Item = %s AND purpose = %s 
-                AND TRIM(LOWER(status_)) = 'pending';
-            """, (naam, quantity, item, purpose))
-            mydb.commit()
-
-            # Insert the request into the 'approved' table with email
-            cursor.execute("""
-                INSERT INTO approved (Item, naam, quantity, purpose, email) 
-                VALUES (%s, %s, %s, %s, %s);
-            """, (item, naam, quantity, purpose, email))
-
-            # Update the inventory
-            cursor.execute("""
-                UPDATE CulturalInventory 
-                SET ItemQty = ItemQty - %s 
-                WHERE ItemName = %s;
-            """, (quantity, item))
-            mydb.commit()
-
-            flash('Request approved successfully!', 'success')
-            return render_template("admin.html", name=name, position=pos, council=club)
-
-        except Exception as e:
-            print(f"Error in approve function: {e}")
-            mydb.rollback()
-            flash('An error occurred while approving the request.', 'danger')
-
-            # Fetch club and position for the user again in case of error
-            cursor.execute("SELECT Club, Position FROM details WHERE Name = %s", (name,))
-            club, pos = cursor.fetchone()
-
-            return render_template("admin.html", name=name, position=pos, council=club)
-
-
-@app.route('/reject', methods=['POST'])
-def reject_request():
-    if request.method == 'POST':
-        # Fetch form data
-        naam = request.form['naam']
-        name=request.form['username']
-        item = request.form['item']
-        quantity = request.form['quantity']
-        purpose = request.form['purpose']
+          // Fetch data from the approved table endpoint
+          fetch("/approvedtable")
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              return response.json();
+            })
+            .then((data) => {
+              console.log("Fetched data:", data); // Debug log
+              approvedTableContent.innerHTML = ""; // Clear existing rows
         
-        # Delete the request from the 'requests' table
-        cursor.execute("""DELETE FROM requests WHERE naam = %s AND quantity = %s AND Item = %s AND purpose = %s;""", (naam, quantity, item, purpose))
-        mydb.commit()
+              // Populate table with fetched data
+              data.forEach((item) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                  <td>${item.Item}</td>
+                  <td>${item.Holder_Name}</td>
+                  <td>${item.Quantity}</td>
+                  <td>${item.Purpose}</td>
+                  <td>${item.Email}</td>
+                `;
+                approvedTableContent.appendChild(row);
+              });
+            })
+            .catch((error) => {
+              console.error("Error fetching approved table data:", error);
+              alert("Failed to load approved table data. Please try again.");
+            });
+        });
+        
 
-        # Fetch club and position for the user
-        cursor.execute("SELECT Club, Position FROM details WHERE Name = %s", (name,))
-        club, pos = cursor.fetchone()
+        // Request item functionality
+        const dropdown = document.getElementById("item_id");
+        const quantityInput = document.getElementById("quantity");
+        const quantityHelp = document.getElementById("quantityHelp");
 
-        return render_template("admin.html", name=name, position=pos, council=club)
-@app.route('/approvedtable', methods=['GET', 'POST'])
-def approvedtable():
-    try:
-        # Execute query to fetch approved items
-        cursor.execute("SELECT Item, naam, quantity, purpose, email FROM approved")
-        items = cursor.fetchall()
+        let itemqty = {};
+        fetch("/request_item")
+          .then((response) => response.json())
+          .then((data) => {
+            dropdown.innerHTML = '<option value="">-- Select Item --</option>';
+            data.forEach((item) => {
+              const option = document.createElement("option");
+              option.value = item.item_number;
+              option.textContent = item.item_name;
+              itemqty[item.item_number] = item.quantity;
+              dropdown.appendChild(option);
+            });
+          })
+          .catch((error) => {
+            console.error("Error fetching inventory:", error);
+          });
 
-        # Format the results into a list of dictionaries
-        inventory = [
-            {"Item": row[0], "Holder_Name": row[1], "Quantity": row[2], "Purpose": row[3], "Email": row[4]}
-            for row in items
-        ]
+        dropdown.addEventListener("change", () => {
+          const selecteditem = dropdown.value;
+          if (selecteditem && itemqty[selecteditem] !== undefined) {
+            const maxqty = itemqty[selecteditem];
+            quantityHelp.textContent = `Max quantity available: ${maxqty}`;
+            quantityInput.max = maxqty;
+            quantityInput.value = "";
+            submitbtn.disabled = false;
+          } else {
+            quantityHelp.textContent = "Please select a valid item";
+            submitbtn.disabled = true;
+          }
+        });
 
-        # Return the JSON response
-        return jsonify(inventory), 200
-
-    except mysql.connector.Error as db_err:
-        # Handle database-specific errors
-        print(f"Database error: {db_err}")
-        return jsonify({"error": "Database operation failed"}), 500
-
-    except Exception as e:
-        # Handle unexpected errors
-        print(f"Unexpected error in approvedtable: {e}")
-        return jsonify({"error": "An unexpected error occurred"}), 500
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
+        quantityInput.addEventListener("input", () => {
+          const selecteditem = dropdown.value;
+          const maxqty = itemqty[selecteditem];
+          if (quantityInput.value > maxqty) {
+            alert(`You can't request more than ${maxqty} items`);
+            quantityInput.value = maxqty;
+          }
+          submitbtn.disabled =
+            quantityInput.value > maxqty || quantityInput.value <= 0;
+        });
+      });
+    </script>
+  </body>
+</html>
