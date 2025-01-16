@@ -16,6 +16,7 @@ Members can view details of items issued, including who has taken specific items
 
 
 **For Secretary/Admin**
+
 Approve or Reject Requests
 
 Review item requests submitted by members.
