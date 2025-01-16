@@ -6,6 +6,8 @@ The system provides different levels of access and functionality based on user r
 **For Members:**
 
 **Request Items**
+
+
 Members can request items from the inventory by specifying the required quantity and purpose.
 The system validates the requested quantity against available stock to prevent over-requesting.
 View Inventory
