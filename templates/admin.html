@@ -81,6 +81,12 @@
                 ><span class="menuText">Approved Items</span></a
               >
             </li>
+            <li>
+              <a href="#" class="menuActive" id="additembtn"
+                ><i class="fa fa-plus"></i
+                ><span class="menuText">Add New Item</span></a
+              >
+            </li>
             {% endif %}
           </ul>
         </div>
@@ -97,11 +103,34 @@
                 <th>Status</th>
                 <th>Purpose</th>
                 <th>Quantity</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Approve/Reject</th>
               </tr>
             </thead>
             <tbody></tbody>
           </table>
         </div>
+      </div>
+
+      <div id="addItemForm" style="display: none">
+        <h1 class="text-center">Add New Inventory Item</h1>
+        <form method="POST" action="/add_item" class="mt-4" id="addItemFormElement">
+          <input name="user" type="hidden" value="{{ name }}" />
+          <div class="mb-3">
+            <label for="item_name" class="form-label">Item Name</label>
+            <input type="text" name="item_name" id="item_name" class="form-control" required />
+          </div>
+      
+          <div class="mb-3">
+            <label for="quantity" class="form-label">Quantity</label>
+            <input type="number" name="quantity" id="quantity" class="form-control" min="1" required />
+          </div>
+      
+          <button type="submit" class="btn btn-success">
+            <i class="fa fa-plus"></i> Add Item
+          </button>
+        </form>
       </div>
 
       <div class="dashboard_content_container" id="dashboard_content_container">
@@ -137,6 +166,8 @@
                     <th>Quantity</th>
                     <th>Purpose</th>
                     <th>Email</th>
+                    <th>From</th>
+                    <th>To</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -179,11 +210,34 @@
                     required
                   ></textarea>
                 </div>
+                <div class="mb-3">
+                  <label for="from" class="form-label">From</label>
+                  <input
+                    type="datetime-local"
+                    name="from"
+                    id="from"
+                    class="form-control"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="to" class="form-label">To</label>
+                  <input
+                    type="datetime-local"
+                    name="to"
+                    id="to"
+                    class="form-control"
+                    required
+                  />
+                </div>
                 <button type="submit" class="btn btn-primary">
                   Submit Request
                 </button>
               </form>
             </div>
+
+            
+            
           </div>
         </div>
       </div>
@@ -199,6 +253,7 @@
           btn = document.getElementById("requestbtn");
         } else {
           btn = document.getElementById("viewrequestbtn");
+          btn2=document.getElementById("additembtn");
         }
         const dashboard = document.getElementById("dashboard");
         const dashboardContent = document.getElementById("dashboardContent");
@@ -213,6 +268,9 @@
         );
         const submitbtn = document.querySelector('button[type="submit"]');
         const viewRequestsTable = document.getElementById("viewRequestsTable");
+
+        const additem = document.getElementById("addItemForm");
+
         const requestsTableBody = viewRequestsTable.querySelector("tbody");
         const timepass = document.getElementById("dashboard_content_container");
         const topNav = document.getElementById("dashboard_topNav");
@@ -234,6 +292,7 @@
           viewRequestsTable.style.display = "none";
           topNav.style.display = "block";
           approvedTable.style.display = "none";
+          additem.style.display="none";
         });
 
         // View requests functionality
@@ -246,6 +305,7 @@
             requestForm.style.display = "none";
             viewRequestsTable.style.display = "block";
             timepass.style.display = "none";
+            additem.style.display="none";
 
             // Fetch requests
             fetch("/requests")
@@ -272,6 +332,10 @@
                     request.purpose;
                   row.appendChild(document.createElement("td")).textContent =
                     request.quantity;
+                  row.appendChild(document.createElement("td")).textContent =
+                    request.from;
+                  row.appendChild(document.createElement("td")).textContent =
+                    request.to;
 
                   // Create a table cell for the action buttons
                   const actionCell = document.createElement("td");
@@ -306,6 +370,18 @@
                   inputPurposeApprove.name = "purpose";
                   inputPurposeApprove.value = request.purpose;
                   approveForm.appendChild(inputPurposeApprove);
+
+                  const inputfromApprove = document.createElement("input");
+                  inputfromApprove.type = "hidden";
+                  inputfromApprove.name = "from";
+                  inputfromApprove.value = request.from;
+                  approveForm.appendChild(inputfromApprove);
+
+                  const inputtoApprove = document.createElement("input");
+                  inputtoApprove.type = "hidden";
+                  inputtoApprove.name = "to";
+                  inputtoApprove.value = request.to;
+                  approveForm.appendChild(inputtoApprove);
 
                   // Hidden field for logged-in username ({{name}})
                   const inputUsernameApprove = document.createElement("input");
@@ -352,6 +428,18 @@
                   inputPurposeReject.value = request.purpose;
                   rejectForm.appendChild(inputPurposeReject);
 
+                  const inputfromReject = document.createElement("input");
+                  inputfromReject.type = "hidden";
+                  inputfromReject.name = "from";
+                  inputfromReject.value = request.from;
+                  rejectForm.appendChild(inputfromReject);
+
+                  const inputtoReject = document.createElement("input");
+                  inputtoReject.type = "hidden";
+                  inputtoReject.name = "to";
+                  inputtoReject.value = request.to;
+                  rejectForm.appendChild(inputtoReject);
+
                   // Hidden field for logged-in username ({{name}})
                   const inputUsernameReject = document.createElement("input");
                   inputUsernameReject.type = "hidden";
@@ -380,6 +468,36 @@
                 console.error("Error fetching requests:", error);
               });
           });
+
+          btn2.addEventListener("click", (event) => {
+            event.preventDefault();
+            dashboardContent.style.display = "none";
+            inventoryTable.style.display = "none";
+            approvedTable.style.display = "none";
+            requestForm.style.display = "none";
+            viewRequestsTable.style.display = "none";
+            timepass.style.display = "none";
+            additem.style.display="block";
+        });
+
+        document.getElementById("addItemFormElement").addEventListener("submit", (event) => {
+          let itemName = document.getElementById("item_name").value.trim();
+          let quantity = parseInt(document.getElementById("quantity").value, 10);
+      
+          if (itemName === "") {
+              alert("Item name cannot be empty!");
+              event.preventDefault();
+              return;
+          }
+      
+          if (isNaN(quantity) || quantity <= 0) {
+              alert("Quantity must be a valid number greater than 0!");
+              event.preventDefault();
+              return;
+          }
+      });
+      
+
         } else {
           btn.addEventListener("click", (event) => {
             event.preventDefault();
@@ -402,6 +520,7 @@
           topNav.style.display = "none";
           requestForm.style.display = "none";
           viewRequestsTable.style.display = "none";
+          additem.style.display="none";
 
           fetch("/inventory")
             .then((response) => response.json())
@@ -435,6 +554,7 @@
           topNav.style.display = "none";
           requestForm.style.display = "none";
           viewRequestsTable.style.display = "none";
+          additem.style.display="none";
         
           // Fetch data from the approved table endpoint
           fetch("/approvedtable")
@@ -457,6 +577,8 @@
                   <td>${item.Quantity}</td>
                   <td>${item.Purpose}</td>
                   <td>${item.Email}</td>
+                  <td>${item.From}</td>
+                  <td>${item.To}</td>
                 `;
                 approvedTableContent.appendChild(row);
               });
