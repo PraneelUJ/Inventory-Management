@@ -7,7 +7,7 @@ The system provides different levels of access and functionality based on user r
 <img width="1452" height="807" alt="image" src="https://github.com/user-attachments/assets/058289d9-7796-484a-84ee-9b3d5a8ff017" />
 
 
-**For Admin / Secretary:**
+**<h3>For Admin / Secretary:</h3>**
 Page after Login for Admin/ Secretary of the club
 <img width="1909" height="863" alt="image" src="https://github.com/user-attachments/assets/751bc3c8-747f-4a3e-b4b8-41a908f32970" />
 Members can perform the following function:
@@ -52,6 +52,8 @@ Added Guitar, as it already exists so increased its quantity
 <img width="1566" height="671" alt="image" src="https://github.com/user-attachments/assets/fd742fd4-53f3-4d6b-a541-ae4f04864317" />
 Image showing all approved items and relevant details
 <br>
+
+
 **Request Items**
 
 
