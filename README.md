@@ -17,6 +17,7 @@ Members can perform the following function:
 4. View all the approved items.
 
 **1. View the Requests initiated**
+<br>
 Page showing the admin and secretary all the item requests pending
 <img width="1792" height="756" alt="image" src="https://github.com/user-attachments/assets/4e84c97c-e72d-4d79-882d-dc9abcbcdb6f" />
 He/She can accept or reject your request by clicking on the accept / reject button.
