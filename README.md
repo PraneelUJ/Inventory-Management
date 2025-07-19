@@ -1,4 +1,4 @@
-**Overview:**
+## Overview
 
 This Inventory Management System is a web-based application designed to streamline the management of inventory items within an organization. 
 The system provides different levels of access and functionality based on user roles, ensuring efficient handling of inventory requests and approvals.
@@ -71,8 +71,11 @@ The system validates the requested quantity against available stock to prevent o
 <br>
 Same as Admin Page
 
+## Future Work
+Currently this system is only made for 1 club but further improvements can be done on this and it can be extended for several other clubs also on the same website. Also the database can be shifted from local MYSQL to other databases like Firebase, etc. 
+
 ## Contributors
-1. Praneel Joshi - 23110254
+**1. Praneel Joshi - 23110254
 2. Shrutika Yewale - 23110307
-3. Sharvari Mirge - 23110298
+3. Sharvari Mirge - 23110298**
 
