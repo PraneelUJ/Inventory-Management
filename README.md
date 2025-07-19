@@ -7,7 +7,7 @@ The system provides different levels of access and functionality based on user r
 <img width="1452" height="807" alt="image" src="https://github.com/user-attachments/assets/058289d9-7796-484a-84ee-9b3d5a8ff017" />
 
 
-**<h3>For Admin / Secretary:</h3>**
+**<h1>For Admin / Secretary:</h1>**
 Page after Login for Admin/ Secretary of the club
 <img width="1909" height="863" alt="image" src="https://github.com/user-attachments/assets/751bc3c8-747f-4a3e-b4b8-41a908f32970" />
 Members can perform the following function:
@@ -54,33 +54,19 @@ Image showing all approved items and relevant details
 <br>
 
 
+**<h1>For Members:</h1>**
 **Request Items**
-
-
+<br>
+<img width="1737" height="774" alt="image" src="https://github.com/user-attachments/assets/94c739f4-7c74-41b3-900e-ed75a39a572d" />
 Members can request items from the inventory by specifying the required quantity and purpose.
+<br>
+
 The system validates the requested quantity against available stock to prevent over-requesting.
-View Inventory
 
-Members can browse the current inventory to see available items and their quantities.
-Track Issued Items
-Members can view details of items issued, including who has taken specific items and their purposes.
+**2. View Inventory**
+   Same as in Admin page
+   <br>
+**3. View Your Approved Items**
+Same as Admin Page
 
-
-**For Secretary/Admin**
-
-Approve or Reject Requests
-
-Review item requests submitted by members.
-Approve or reject requests based on availability and organizational policies.
-Manage Inventory
-
-View all items in the inventory, including their current stock levels.
-Track Issued Items
-
-Access a detailed log of all issued items, including:
-Item name
-Holder's name
-Quantity issued
-Purpose of issuance
-Contact details of the holder
 
