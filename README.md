@@ -76,6 +76,7 @@ Currently this system is only made for 1 club but further improvements can be do
 
 ## Contributors
 **1. Praneel Joshi - 23110254**
-**2. Shrutika Yewale - 23110307**
+<br>
+**2. Shrutika Yewale - 23110307**<br>
 **3. Sharvari Mirge - 23110298**
 
