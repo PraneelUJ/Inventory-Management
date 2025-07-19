@@ -21,8 +21,10 @@ Page showing the admin and secretary all the item requests pending
 <img width="1792" height="756" alt="image" src="https://github.com/user-attachments/assets/4e84c97c-e72d-4d79-882d-dc9abcbcdb6f" />
 He/She can accept or reject your request by clicking on the accept / reject button.
 <img width="740" height="532" alt="image" src="https://github.com/user-attachments/assets/5aa44d63-5a2c-40a5-b4b0-ed4686a42407" />
+
 **Image showing Admin getting email on submission of request by members.**
 <img width="956" height="369" alt="image" src="https://github.com/user-attachments/assets/cdc4bac7-dd63-4449-a9bd-e5629c2ec70c" />
+
 **Image showing approval email sent to member on approval by admin/secretary.**
 <img width="1122" height="326" alt="image" src="https://github.com/user-attachments/assets/06dd912a-0a91-4961-9cd4-1f3d1b9d4563" />
 **Image showing rejection email sent to member on rejection by admin/secretary.**
