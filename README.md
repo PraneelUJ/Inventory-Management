@@ -14,7 +14,7 @@ Members can perform the following function:
 1. View the request for items 
 2. View the items in the inventory
 3. Add items in inventory
-4. Add new item in the inventory.
+4. View all the approved items.
 
 **1. View the Requests initiated**
 Page showing the admin and secretary all the item requests pending
@@ -28,7 +28,27 @@ He/She can accept or reject your request by clicking on the accept / reject butt
 **-Image showing approval email sent to member on approval by admin/secretary.**
 <img width="1122" height="326" alt="image" src="https://github.com/user-attachments/assets/06dd912a-0a91-4961-9cd4-1f3d1b9d4563" />
 **-Image showing rejection email sent to member on rejection by admin/secretary.**
+<br>
+<br>
+**2. View Items in Inventory**
+<img width="1480" height="743" alt="image" src="https://github.com/user-attachments/assets/2f48fc2e-71b9-4104-857d-2da3955237fa" />
+<br>
+Image showing Admin can see all the items in inventory
+**3. Add Items to the inventory**
+<img width="1467" height="694" alt="image" src="https://github.com/user-attachments/assets/25289b81-47fe-4086-aa27-86531cf1c01c" />
+<br>
+<img width="1467" height="694" alt="image" src="https://github.com/user-attachments/assets/72bbca43-9c2a-4115-b752-a2e8cb40f7e0" />
+<br>
+Adding new item which doesn't exist in inventory
+<br>
+If an item already exists then its quantity is increased
+<img width="1445" height="699" alt="image" src="https://github.com/user-attachments/assets/b8f36de3-a5a8-4159-bf5d-41d567d7783a" />
+<br>
+Added Guitar, as it already exists so increased its quantity
 
+**4. View approve items**
+<img width="1566" height="671" alt="image" src="https://github.com/user-attachments/assets/fd742fd4-53f3-4d6b-a541-ae4f04864317" />
+Image showing all approved items and relevant details
 
 **Request Items**
 
