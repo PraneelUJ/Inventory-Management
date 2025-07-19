@@ -71,4 +71,8 @@ The system validates the requested quantity against available stock to prevent o
 <br>
 Same as Admin Page
 
+## Contributors
+1. Praneel Joshi - 23110254
+2. Shrutika Yewale - 23110307
+3. Sharvari Mirge - 23110298
 
