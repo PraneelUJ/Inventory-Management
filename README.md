@@ -3,6 +3,9 @@
 This Inventory Management System is a web-based application designed to streamline the management of inventory items within an organization. 
 The system provides different levels of access and functionality based on user roles, ensuring efficient handling of inventory requests and approvals.
 
+**Login Page for both members and Admins**
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/0525dfe1-226c-4823-9115-df7f38e7c16e" />
+
 **For Members:**
 
 **Request Items**
