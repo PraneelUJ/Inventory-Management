@@ -34,6 +34,7 @@ He/She can accept or reject your request by clicking on the accept / reject butt
 <img width="1480" height="743" alt="image" src="https://github.com/user-attachments/assets/2f48fc2e-71b9-4104-857d-2da3955237fa" />
 <br>
 Image showing Admin can see all the items in inventory
+<br>
 **3. Add Items to the inventory**
 <img width="1467" height="694" alt="image" src="https://github.com/user-attachments/assets/25289b81-47fe-4086-aa27-86531cf1c01c" />
 <br>
@@ -45,11 +46,11 @@ If an item already exists then its quantity is increased
 <img width="1445" height="699" alt="image" src="https://github.com/user-attachments/assets/b8f36de3-a5a8-4159-bf5d-41d567d7783a" />
 <br>
 Added Guitar, as it already exists so increased its quantity
-
+<br>
 **4. View approve items**
 <img width="1566" height="671" alt="image" src="https://github.com/user-attachments/assets/fd742fd4-53f3-4d6b-a541-ae4f04864317" />
 Image showing all approved items and relevant details
-
+<br>
 **Request Items**
 
 
