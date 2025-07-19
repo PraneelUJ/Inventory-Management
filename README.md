@@ -75,7 +75,7 @@ Same as Admin Page
 Currently this system is only made for 1 club but further improvements can be done on this and it can be extended for several other clubs also on the same website. Also the database can be shifted from local MYSQL to other databases like Firebase, etc. 
 
 ## Contributors
-**1. Praneel Joshi - 23110254
-2. Shrutika Yewale - 23110307
-3. Sharvari Mirge - 23110298**
+**1. Praneel Joshi - 23110254**
+**2. Shrutika Yewale - 23110307**
+**3. Sharvari Mirge - 23110298**
 
