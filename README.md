@@ -64,9 +64,11 @@ Members can request items from the inventory by specifying the required quantity
 The system validates the requested quantity against available stock to prevent over-requesting.
 
 **2. View Inventory**
+<br>
    Same as in Admin page
    <br>
 **3. View Your Approved Items**
+<br>
 Same as Admin Page
 
 
